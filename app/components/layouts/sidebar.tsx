@@ -2,7 +2,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGift, faHome } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import { json } from "@remix-run/node";
-import { Link, useLocation } from "@remix-run/react";
+import { Form, Link, useLocation } from "@remix-run/react";
+import { useUser } from "~/utils";
 
 export const loader = async ({ request }: any) => {
   const url = new URL(request.url);
@@ -12,8 +13,10 @@ export const loader = async ({ request }: any) => {
 };
 
 const Sidebar = () => {
+  const user = useUser();
   const location = useLocation();
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [showHeader, setShowHeader] = useState(false);
 
   useEffect(() => {
     const sidebar = document.getElementById("kt_app_sidebar_navs_wrappers");
@@ -48,12 +51,16 @@ const Sidebar = () => {
           <div className="">
             <div
               className="d-flex align-items-center"
-              data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
+              // data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
               data-kt-menu-overflow="true"
               data-kt-menu-placement="top-start"
             >
               <div className="d-flex flex-center cursor-pointer symbol symbol-custom symbol-40px">
-                <img src="assets/media/avatars/300-2.jpg" alt="image" />
+                <img
+                  src="assets/media/avatars/300-2.jpg"
+                  alt="image"
+                  onClick={() => setShowHeader(!showHeader)}
+                />
               </div>
 
               <a
@@ -64,135 +71,46 @@ const Sidebar = () => {
               </a>
             </div>
 
-            <div
-              className="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px"
-              data-kt-menu="true"
-              // style={{ position: 'absolute', zIndex: '107' }}
-            >
-              <div className="menu-item px-3">
-                <div className="menu-content d-flex align-items-center px-3">
-                  <div className="symbol symbol-50px me-5">
-                    <img alt="Logo" src="assets/media/avatars/300-2.jpg" />
-                  </div>
-
-                  <div className="d-flex flex-column">
-                    <div className="fw-bold d-flex align-items-center fs-5">
-                      Eugenia
-                      <span className="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">
-                        Pro
-                      </span>
-                    </div>
-                    <a
-                      href="#"
-                      className="fw-semibold text-muted text-hover-primary fs-7"
-                    >
-                      eugenia@kt.com
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              <div className="separator my-2"></div>
-
-              <div className="menu-item px-5">
-                <a href="account/overview.html" className="menu-link px-5">
-                  My Profile
-                </a>
-              </div>
-
-              <div className="menu-item px-5">
-                <a href="apps/projects/list.html" className="menu-link px-5">
-                  <span className="menu-text">My Projects</span>
-                  <span className="menu-badge">
-                    <span className="badge badge-light-danger badge-circle fw-bold fs-7">
-                      3
-                    </span>
-                  </span>
-                </a>
-              </div>
-
+            {showHeader && (
               <div
-                className="menu-item px-5"
-                data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
-                data-kt-menu-placement="right-end"
-                data-kt-menu-offset="-15px, 0"
+                className="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px"
+                data-kt-menu="true"
+                style={{ display: "block", zIndex: "107" }}
               >
-                <a href="#" className="menu-link px-5">
-                  <span className="menu-title">My Subscription</span>
-                  <span className="menu-arrow"></span>
-                </a>
+                <div className="menu-item px-3">
+                  <div className="menu-content d-flex align-items-center px-3">
+                    <div className="symbol symbol-50px me-5">
+                      <img alt="Logo" src="assets/media/avatars/300-2.jpg" />
+                    </div>
 
-                <div className="menu-sub menu-sub-dropdown w-175px py-4">
-                  <div className="menu-item px-3">
-                    <a href="account/referrals.html" className="menu-link px-5">
-                      Referrals
-                    </a>
-                  </div>
-
-                  <div className="menu-item px-3">
-                    <a href="account/billing.html" className="menu-link px-5">
-                      Billing
-                    </a>
-                  </div>
-
-                  <div className="menu-item px-3">
-                    <a
-                      href="account/statements.html"
-                      className="menu-link px-5"
-                    >
-                      Payments
-                    </a>
-                  </div>
-
-                  <div className="menu-item px-3">
-                    <a
-                      href="account/statements.html"
-                      className="menu-link d-flex flex-stack px-5"
-                    >
-                      Statements
-                      <span
-                        className="ms-2 lh-0"
-                        data-bs-toggle="tooltip"
-                        title="View your statements"
-                      >
-                        <i className="ki-duotone ki-information-5 fs-5">
-                          <span className="path1"></span>
-                          <span className="path2"></span>
-                          <span className="path3"></span>
-                        </i>
-                      </span>
-                    </a>
-                  </div>
-
-                  <div className="separator my-2"></div>
-
-                  <div className="menu-item px-3">
-                    <div className="menu-content px-3">
-                      <label className="form-check form-switch form-check-custom form-check-solid">
-                        <input
-                          className="form-check-input w-30px h-20px"
-                          type="checkbox"
-                          value="1"
-                          name="notifications"
-                        />
-                        <span className="form-check-label text-muted fs-7">
-                          Notifications
+                    <div className="d-flex flex-column">
+                      <div className="fw-bold d-flex align-items-center fs-5">
+                        Eugenia
+                        <span className="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">
+                          Pro
                         </span>
-                      </label>
+                      </div>
+                      <a
+                        href="#"
+                        className="fw-semibold text-muted text-hover-primary fs-7"
+                      >
+                        {user.email}
+                      </a>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="menu-item px-5">
-                <a href="account/statements.html" className="menu-link px-5">
-                  My Statements
-                </a>
-              </div>
+                <div className="separator my-2"></div>
 
-              <div className="separator my-2"></div>
+                <div className="menu-item px-5">
+                  <a href="account/overview.html" className="menu-link px-5">
+                    My Profile
+                  </a>
+                </div>
 
-              <div
+                <div className="separator my-2"></div>
+
+                {/* <div
                 className="menu-item px-5"
                 data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
                 data-kt-menu-placement="left-start"
@@ -288,9 +206,9 @@ const Sidebar = () => {
                     </a>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
-              <div
+                {/* <div
                 className="menu-item px-5"
                 data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
                 data-kt-menu-placement="right-end"
@@ -391,23 +309,29 @@ const Sidebar = () => {
                     </a>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
-              <div className="menu-item px-5 my-1">
+                {/* <div className="menu-item px-5 my-1">
                 <a href="account/settings.html" className="menu-link px-5">
                   Account Settings
                 </a>
-              </div>
+              </div> */}
 
-              <div className="menu-item px-5">
-                <a
+                <div className="menu-item px-5">
+                  {/* <a
                   href="authentication/layouts/corporate/sign-in.html"
                   className="menu-link px-5"
                 >
                   Sign Out
-                </a>
+                </a> */}
+                  <Form action="/logout" method="post">
+                    <button type="submit" className="menu-link px-5">
+                      Logout
+                    </button>
+                  </Form>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

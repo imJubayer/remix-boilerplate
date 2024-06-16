@@ -21,7 +21,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
-  const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
+  const redirectTo = safeRedirect(formData.get("redirectTo"), "/dashboard");
   const remember = formData.get("remember");
 
   if (!validateEmail(email)) {
@@ -80,100 +80,378 @@ export default function LoginPage() {
   }, [actionData]);
 
   return (
-    <div className="flex min-h-full flex-col justify-center">
-      <div className="mx-auto w-full max-w-md px-8">
-        <Form method="post" className="space-y-6">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Email address
-            </label>
-            <div className="mt-1">
-              <input
-                ref={emailRef}
-                id="email"
-                required
-                // eslint-disable-next-line jsx-a11y/no-autofocus
-                autoFocus={true}
-                name="email"
-                type="email"
-                autoComplete="email"
-                aria-invalid={actionData?.errors?.email ? true : undefined}
-                aria-describedby="email-error"
-                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
-              />
-              {actionData?.errors?.email ? (
-                <div className="pt-1 text-red-700" id="email-error">
-                  {actionData.errors.email}
-                </div>
-              ) : null}
-            </div>
-          </div>
+    // <div className="flex min-h-full flex-col justify-center">
+    //   <div className="mx-auto w-full max-w-md px-8">
+    //     <Form method="post" className="space-y-6">
+    //       <div>
+    //         <label
+    //           htmlFor="email"
+    //           className="block text-sm font-medium text-gray-700"
+    //         >
+    //           Email address
+    //         </label>
+    //         <div className="mt-1">
+    //           <input
+    //             ref={emailRef}
+    //             id="email"
+    //             required
+    //             // eslint-disable-next-line jsx-a11y/no-autofocus
+    //             autoFocus={true}
+    //             name="email"
+    //             type="email"
+    //             autoComplete="email"
+    //             aria-invalid={actionData?.errors?.email ? true : undefined}
+    //             aria-describedby="email-error"
+    //             className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+    //           />
+    //           {actionData?.errors?.email ? (
+    //             <div className="pt-1 text-red-700" id="email-error">
+    //               {actionData.errors.email}
+    //             </div>
+    //           ) : null}
+    //         </div>
+    //       </div>
 
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Password
-            </label>
-            <div className="mt-1">
-              <input
-                id="password"
-                ref={passwordRef}
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                aria-invalid={actionData?.errors?.password ? true : undefined}
-                aria-describedby="password-error"
-                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
-              />
-              {actionData?.errors?.password ? (
-                <div className="pt-1 text-red-700" id="password-error">
-                  {actionData.errors.password}
-                </div>
-              ) : null}
-            </div>
-          </div>
+    //       <div>
+    //         <label
+    //           htmlFor="password"
+    //           className="block text-sm font-medium text-gray-700"
+    //         >
+    //           Password
+    //         </label>
+    //         <div className="mt-1">
+    //           <input
+    //             id="password"
+    //             ref={passwordRef}
+    //             name="password"
+    //             type="password"
+    //             autoComplete="current-password"
+    //             aria-invalid={actionData?.errors?.password ? true : undefined}
+    //             aria-describedby="password-error"
+    //             className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+    //           />
+    //           {actionData?.errors?.password ? (
+    //             <div className="pt-1 text-red-700" id="password-error">
+    //               {actionData.errors.password}
+    //             </div>
+    //           ) : null}
+    //         </div>
+    //       </div>
 
-          <input type="hidden" name="redirectTo" value={redirectTo} />
-          <button
-            type="submit"
-            className="w-full rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
-          >
-            Log in
-          </button>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember"
-                name="remember"
-                type="checkbox"
-                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <label
-                htmlFor="remember"
-                className="ml-2 block text-sm text-gray-900"
-              >
-                Remember me
-              </label>
+    //       <input type="hidden" name="redirectTo" value={redirectTo} />
+    //       <button
+    //         type="submit"
+    //         className="w-full rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
+    //       >
+    //         Log in
+    //       </button>
+    //       <div className="flex items-center justify-between">
+    //         <div className="flex items-center">
+    //           <input
+    //             id="remember"
+    //             name="remember"
+    //             type="checkbox"
+    //             className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+    //           />
+    //           <label
+    //             htmlFor="remember"
+    //             className="ml-2 block text-sm text-gray-900"
+    //           >
+    //             Remember me
+    //           </label>
+    //         </div>
+    //         <div className="text-center text-sm text-gray-500">
+    //           Don&apos;t have an account?{" "}
+    //           <Link
+    //             className="text-blue-500 underline"
+    //             to={{
+    //               pathname: "/join",
+    //               search: searchParams.toString(),
+    //             }}
+    //           >
+    //             Sign up
+    //           </Link>
+    //         </div>
+    //       </div>
+    //     </Form>
+    //   </div>
+    // </div>
+    <div
+      className="d-flex flex-column flex-root"
+      id="kt_app_root"
+      style={{ backgroundImage: `url(assets/media/auth/bg4.jpg)` }}
+    >
+      {/* <style>body { background-image: url('assets/media/auth/bg4.jpg'); } [data-bs-theme="dark"] body { background-image: url('assets/media/auth/bg4-dark.jpg'); }</style> */}
+
+      <div className="d-flex flex-column flex-column-fluid flex-lg-row">
+        <div className="d-flex flex-center w-lg-50 pt-15 pt-lg-0 px-10">
+          <div className="d-flex flex-center flex-lg-start flex-column">
+            <a href="index.html" className="mb-7">
+              <img alt="Logo" src="assets/media/logos/custom-3.svg" />
+            </a>
+
+            <h2 className="text-white fw-normal m-0">
+              Branding tools designed for your business
+            </h2>
+          </div>
+        </div>
+
+        <div className="d-flex flex-column-fluid flex-lg-row-auto justify-content-center justify-content-lg-end p-12 p-lg-20">
+          <div className="bg-body d-flex flex-column align-items-stretch flex-center rounded-4 w-md-600px p-20">
+            <div className="d-flex flex-center flex-column flex-column-fluid px-lg-10 pb-15 pb-lg-20">
+              <Form className="form w-100" method="post" id="kt_sign_in_form">
+                <div className="text-center mb-11">
+                  <h1 className="text-gray-900 fw-bolder mb-3">Sign In</h1>
+
+                  <div className="text-gray-500 fw-semibold fs-6">
+                    Your Social Campaigns
+                  </div>
+                </div>
+
+                <div className="row g-3 mb-9">
+                  <div className="col-md-6">
+                    <a
+                      href="#"
+                      className="btn btn-flex btn-outline btn-text-gray-700 btn-active-color-primary bg-state-light flex-center text-nowrap w-100"
+                    >
+                      <img
+                        alt="Logo"
+                        src="assets/media/svg/brand-logos/google-icon.svg"
+                        className="h-15px me-3"
+                      />
+                      Sign in with Google
+                    </a>
+                  </div>
+
+                  <div className="col-md-6">
+                    <a
+                      href="#"
+                      className="btn btn-flex btn-outline btn-text-gray-700 btn-active-color-primary bg-state-light flex-center text-nowrap w-100"
+                    >
+                      <img
+                        alt="Logo"
+                        src="assets/media/svg/brand-logos/apple-black.svg"
+                        className="theme-light-show h-15px me-3"
+                      />
+                      <img
+                        alt="Logo"
+                        src="assets/media/svg/brand-logos/apple-black-dark.svg"
+                        className="theme-dark-show h-15px me-3"
+                      />
+                      Sign in with Apple
+                    </a>
+                  </div>
+                </div>
+
+                <div className="separator separator-content my-14">
+                  <span className="w-125px text-gray-500 fw-semibold fs-7">
+                    Or with email
+                  </span>
+                </div>
+
+                <div className="fv-row mb-8">
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    name="email"
+                    autoComplete="off"
+                    className="form-control bg-transparent"
+                    autoFocus={true}
+                    aria-invalid={actionData?.errors?.email ? true : undefined}
+                    aria-describedby="email-error"
+                  />
+                  {actionData?.errors?.email ? (
+                    <div className="text-danger" id="email-error">
+                      {actionData.errors.email}
+                    </div>
+                  ) : null}
+                </div>
+
+                <div className="fv-row mb-3">
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    name="password"
+                    autoComplete="off"
+                    className="form-control bg-transparent"
+                    aria-invalid={
+                      actionData?.errors?.password ? true : undefined
+                    }
+                    aria-describedby="password-error"
+                  />
+                  {actionData?.errors?.password ? (
+                    <div className="text-danger" id="password-error">
+                      {actionData.errors.password}
+                    </div>
+                  ) : null}
+                </div>
+
+                <div className="d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8">
+                  <div></div>
+
+                  <a
+                    href="authentication/layouts/creative/reset-password.html"
+                    className="link-primary"
+                  >
+                    Forgot Password ?
+                  </a>
+                </div>
+
+                <div className="d-grid mb-10">
+                  <button
+                    type="submit"
+                    id="kt_sign_in_submit"
+                    className="btn btn-primary"
+                  >
+                    <span className="indicator-label">Sign In</span>
+
+                    <span className="indicator-progress">
+                      Please wait...
+                      <span className="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    </span>
+                  </button>
+                </div>
+
+                <div className="text-gray-500 text-center fw-semibold fs-6">
+                  Not a Member yet?
+                  <Link to="/join" className="link-primary">
+                    Sign up
+                  </Link>
+                </div>
+              </Form>
             </div>
-            <div className="text-center text-sm text-gray-500">
-              Don&apos;t have an account?{" "}
-              <Link
-                className="text-blue-500 underline"
-                to={{
-                  pathname: "/join",
-                  search: searchParams.toString(),
-                }}
-              >
-                Sign up
-              </Link>
+
+            <div className="d-flex flex-stack px-lg-10">
+              <div className="me-0">
+                <button
+                  className="btn btn-flex btn-link btn-color-gray-700 btn-active-color-primary rotate fs-base"
+                  data-kt-menu-trigger="click"
+                  data-kt-menu-placement="bottom-start"
+                  data-kt-menu-offset="0px, 0px"
+                >
+                  <img
+                    data-kt-element="current-lang-flag"
+                    className="w-20px h-20px rounded me-3"
+                    src="assets/media/flags/united-states.svg"
+                    alt=""
+                  />
+                  <span data-kt-element="current-lang-name" className="me-1">
+                    English
+                  </span>
+                  <i className="ki-duotone ki-down fs-5 text-muted rotate-180 m-0"></i>
+                </button>
+
+                <div
+                  className="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-4 fs-7"
+                  data-kt-menu="true"
+                  id="kt_auth_lang_menu"
+                >
+                  <div className="menu-item px-3">
+                    <a
+                      href="#"
+                      className="menu-link d-flex px-5"
+                      data-kt-lang="English"
+                    >
+                      <span className="symbol symbol-20px me-4">
+                        <img
+                          data-kt-element="lang-flag"
+                          className="rounded-1"
+                          src="assets/media/flags/united-states.svg"
+                          alt=""
+                        />
+                      </span>
+                      <span data-kt-element="lang-name">English</span>
+                    </a>
+                  </div>
+
+                  <div className="menu-item px-3">
+                    <a
+                      href="#"
+                      className="menu-link d-flex px-5"
+                      data-kt-lang="Spanish"
+                    >
+                      <span className="symbol symbol-20px me-4">
+                        <img
+                          data-kt-element="lang-flag"
+                          className="rounded-1"
+                          src="assets/media/flags/spain.svg"
+                          alt=""
+                        />
+                      </span>
+                      <span data-kt-element="lang-name">Spanish</span>
+                    </a>
+                  </div>
+
+                  <div className="menu-item px-3">
+                    <a
+                      href="#"
+                      className="menu-link d-flex px-5"
+                      data-kt-lang="German"
+                    >
+                      <span className="symbol symbol-20px me-4">
+                        <img
+                          data-kt-element="lang-flag"
+                          className="rounded-1"
+                          src="assets/media/flags/germany.svg"
+                          alt=""
+                        />
+                      </span>
+                      <span data-kt-element="lang-name">German</span>
+                    </a>
+                  </div>
+
+                  <div className="menu-item px-3">
+                    <a
+                      href="#"
+                      className="menu-link d-flex px-5"
+                      data-kt-lang="Japanese"
+                    >
+                      <span className="symbol symbol-20px me-4">
+                        <img
+                          data-kt-element="lang-flag"
+                          className="rounded-1"
+                          src="assets/media/flags/japan.svg"
+                          alt=""
+                        />
+                      </span>
+                      <span data-kt-element="lang-name">Japanese</span>
+                    </a>
+                  </div>
+
+                  <div className="menu-item px-3">
+                    <a
+                      href="#"
+                      className="menu-link d-flex px-5"
+                      data-kt-lang="French"
+                    >
+                      <span className="symbol symbol-20px me-4">
+                        <img
+                          data-kt-element="lang-flag"
+                          className="rounded-1"
+                          src="assets/media/flags/france.svg"
+                          alt=""
+                        />
+                      </span>
+                      <span data-kt-element="lang-name">French</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <div className="d-flex fw-semibold text-primary fs-base gap-5">
+                <a href="pages/team.html" target="_blank">
+                  Terms
+                </a>
+                <a href="pages/pricing/column.html" target="_blank">
+                  Plans
+                </a>
+                <a href="pages/contact.html" target="_blank">
+                  Contact Us
+                </a>
+              </div>
             </div>
           </div>
-        </Form>
+        </div>
       </div>
     </div>
   );

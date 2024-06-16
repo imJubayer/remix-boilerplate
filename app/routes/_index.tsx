@@ -1,7 +1,11 @@
-import type { MetaFunction } from "@remix-run/node";
-import { Link } from "@remix-run/react";
+import type { LoaderFunction, MetaFunction } from "@remix-run/node";
+import { Link, redirect } from "@remix-run/react";
 
 import { useOptionalUser } from "~/utils";
+
+export let loader: LoaderFunction = async () => {
+  return redirect("/dashboard");
+};
 
 export const meta: MetaFunction = () => [{ title: "Remix Notes" }];
 
