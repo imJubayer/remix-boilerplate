@@ -8,8 +8,11 @@ import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 
 import { verifyLogin } from "~/models/user.server";
+import { signInSchema } from "~/schema/authentication";
 import { createUserSession, getUserId } from "~/session.server";
 import { safeRedirect, validateEmail } from "~/utils";
+import * as yup from "yup";
+import PasswordInput from "~/components/common/password";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await getUserId(request);
@@ -19,54 +22,51 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
-  const email = formData.get("email");
-  const password = formData.get("password");
+  const formDataObject = Object.fromEntries(formData.entries());
+  // const email = formData.get("email");
+  // const password = formData.get("password");
   const redirectTo = safeRedirect(formData.get("redirectTo"), "/dashboard");
   const remember = formData.get("remember");
 
-  if (!validateEmail(email)) {
-    return json(
-      { errors: { email: "Email is invalid", password: null } },
-      { status: 400 },
-    );
+  try {
+    const validatedData = await signInSchema.validate(formDataObject, {
+      abortEarly: false,
+    });
+    const { email, password } = validatedData;
+    const user = await verifyLogin(email, password);
+
+    if (!user) {
+      return json(
+        { errors: { email: "Invalid email or password", password: null } },
+        { status: 400 },
+      );
+    }
+
+    return createUserSession({
+      redirectTo,
+      remember: remember === "on" ? true : false,
+      request,
+      userId: user.id,
+    });
+  } catch (error) {
+    if (error instanceof yup.ValidationError) {
+      // `inner` property contains an array of validation errors
+      const errorFields: any = {};
+      error.inner.forEach((err: any) => {
+        // Extract the path (field name) and message from each error
+        errorFields[err.path] = err.message;
+      });
+      return json({ errors: errorFields }, { status: 422 });
+    }
+    return json({ errors: error }, { status: 422 });
   }
-
-  if (typeof password !== "string" || password.length === 0) {
-    return json(
-      { errors: { email: null, password: "Password is required" } },
-      { status: 400 },
-    );
-  }
-
-  if (password.length < 8) {
-    return json(
-      { errors: { email: null, password: "Password is too short" } },
-      { status: 400 },
-    );
-  }
-
-  const user = await verifyLogin(email, password);
-
-  if (!user) {
-    return json(
-      { errors: { email: "Invalid email or password", password: null } },
-      { status: 400 },
-    );
-  }
-
-  return createUserSession({
-    redirectTo,
-    remember: remember === "on" ? true : false,
-    request,
-    userId: user.id,
-  });
 };
 
 export const meta: MetaFunction = () => [{ title: "Login" }];
 
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/notes";
+  const redirectTo = searchParams.get("redirectTo") || "/dashboard";
   const actionData = useActionData<typeof action>();
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -80,102 +80,6 @@ export default function LoginPage() {
   }, [actionData]);
 
   return (
-    // <div className="flex min-h-full flex-col justify-center">
-    //   <div className="mx-auto w-full max-w-md px-8">
-    //     <Form method="post" className="space-y-6">
-    //       <div>
-    //         <label
-    //           htmlFor="email"
-    //           className="block text-sm font-medium text-gray-700"
-    //         >
-    //           Email address
-    //         </label>
-    //         <div className="mt-1">
-    //           <input
-    //             ref={emailRef}
-    //             id="email"
-    //             required
-    //             // eslint-disable-next-line jsx-a11y/no-autofocus
-    //             autoFocus={true}
-    //             name="email"
-    //             type="email"
-    //             autoComplete="email"
-    //             aria-invalid={actionData?.errors?.email ? true : undefined}
-    //             aria-describedby="email-error"
-    //             className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
-    //           />
-    //           {actionData?.errors?.email ? (
-    //             <div className="pt-1 text-red-700" id="email-error">
-    //               {actionData.errors.email}
-    //             </div>
-    //           ) : null}
-    //         </div>
-    //       </div>
-
-    //       <div>
-    //         <label
-    //           htmlFor="password"
-    //           className="block text-sm font-medium text-gray-700"
-    //         >
-    //           Password
-    //         </label>
-    //         <div className="mt-1">
-    //           <input
-    //             id="password"
-    //             ref={passwordRef}
-    //             name="password"
-    //             type="password"
-    //             autoComplete="current-password"
-    //             aria-invalid={actionData?.errors?.password ? true : undefined}
-    //             aria-describedby="password-error"
-    //             className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
-    //           />
-    //           {actionData?.errors?.password ? (
-    //             <div className="pt-1 text-red-700" id="password-error">
-    //               {actionData.errors.password}
-    //             </div>
-    //           ) : null}
-    //         </div>
-    //       </div>
-
-    //       <input type="hidden" name="redirectTo" value={redirectTo} />
-    //       <button
-    //         type="submit"
-    //         className="w-full rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
-    //       >
-    //         Log in
-    //       </button>
-    //       <div className="flex items-center justify-between">
-    //         <div className="flex items-center">
-    //           <input
-    //             id="remember"
-    //             name="remember"
-    //             type="checkbox"
-    //             className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-    //           />
-    //           <label
-    //             htmlFor="remember"
-    //             className="ml-2 block text-sm text-gray-900"
-    //           >
-    //             Remember me
-    //           </label>
-    //         </div>
-    //         <div className="text-center text-sm text-gray-500">
-    //           Don&apos;t have an account?{" "}
-    //           <Link
-    //             className="text-blue-500 underline"
-    //             to={{
-    //               pathname: "/join",
-    //               search: searchParams.toString(),
-    //             }}
-    //           >
-    //             Sign up
-    //           </Link>
-    //         </div>
-    //       </div>
-    //     </Form>
-    //   </div>
-    // </div>
     <div
       className="d-flex flex-column flex-root"
       id="kt_app_root"
@@ -255,10 +159,8 @@ export default function LoginPage() {
                     placeholder="Email"
                     name="email"
                     autoComplete="off"
-                    className="form-control bg-transparent"
+                    className={`form-control bg-transparent ${actionData?.errors?.email ? "is-invalid" : ""}`}
                     autoFocus={true}
-                    aria-invalid={actionData?.errors?.email ? true : undefined}
-                    aria-describedby="email-error"
                   />
                   {actionData?.errors?.email ? (
                     <div className="text-danger" id="email-error">
@@ -268,22 +170,7 @@ export default function LoginPage() {
                 </div>
 
                 <div className="fv-row mb-3">
-                  <input
-                    type="password"
-                    placeholder="Password"
-                    name="password"
-                    autoComplete="off"
-                    className="form-control bg-transparent"
-                    aria-invalid={
-                      actionData?.errors?.password ? true : undefined
-                    }
-                    aria-describedby="password-error"
-                  />
-                  {actionData?.errors?.password ? (
-                    <div className="text-danger" id="password-error">
-                      {actionData.errors.password}
-                    </div>
-                  ) : null}
+                  <PasswordInput error={actionData?.errors.password} />
                 </div>
 
                 <div className="d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8">
@@ -319,136 +206,6 @@ export default function LoginPage() {
                   </Link>
                 </div>
               </Form>
-            </div>
-
-            <div className="d-flex flex-stack px-lg-10">
-              <div className="me-0">
-                <button
-                  className="btn btn-flex btn-link btn-color-gray-700 btn-active-color-primary rotate fs-base"
-                  data-kt-menu-trigger="click"
-                  data-kt-menu-placement="bottom-start"
-                  data-kt-menu-offset="0px, 0px"
-                >
-                  <img
-                    data-kt-element="current-lang-flag"
-                    className="w-20px h-20px rounded me-3"
-                    src="assets/media/flags/united-states.svg"
-                    alt=""
-                  />
-                  <span data-kt-element="current-lang-name" className="me-1">
-                    English
-                  </span>
-                  <i className="ki-duotone ki-down fs-5 text-muted rotate-180 m-0"></i>
-                </button>
-
-                <div
-                  className="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-4 fs-7"
-                  data-kt-menu="true"
-                  id="kt_auth_lang_menu"
-                >
-                  <div className="menu-item px-3">
-                    <a
-                      href="#"
-                      className="menu-link d-flex px-5"
-                      data-kt-lang="English"
-                    >
-                      <span className="symbol symbol-20px me-4">
-                        <img
-                          data-kt-element="lang-flag"
-                          className="rounded-1"
-                          src="assets/media/flags/united-states.svg"
-                          alt=""
-                        />
-                      </span>
-                      <span data-kt-element="lang-name">English</span>
-                    </a>
-                  </div>
-
-                  <div className="menu-item px-3">
-                    <a
-                      href="#"
-                      className="menu-link d-flex px-5"
-                      data-kt-lang="Spanish"
-                    >
-                      <span className="symbol symbol-20px me-4">
-                        <img
-                          data-kt-element="lang-flag"
-                          className="rounded-1"
-                          src="assets/media/flags/spain.svg"
-                          alt=""
-                        />
-                      </span>
-                      <span data-kt-element="lang-name">Spanish</span>
-                    </a>
-                  </div>
-
-                  <div className="menu-item px-3">
-                    <a
-                      href="#"
-                      className="menu-link d-flex px-5"
-                      data-kt-lang="German"
-                    >
-                      <span className="symbol symbol-20px me-4">
-                        <img
-                          data-kt-element="lang-flag"
-                          className="rounded-1"
-                          src="assets/media/flags/germany.svg"
-                          alt=""
-                        />
-                      </span>
-                      <span data-kt-element="lang-name">German</span>
-                    </a>
-                  </div>
-
-                  <div className="menu-item px-3">
-                    <a
-                      href="#"
-                      className="menu-link d-flex px-5"
-                      data-kt-lang="Japanese"
-                    >
-                      <span className="symbol symbol-20px me-4">
-                        <img
-                          data-kt-element="lang-flag"
-                          className="rounded-1"
-                          src="assets/media/flags/japan.svg"
-                          alt=""
-                        />
-                      </span>
-                      <span data-kt-element="lang-name">Japanese</span>
-                    </a>
-                  </div>
-
-                  <div className="menu-item px-3">
-                    <a
-                      href="#"
-                      className="menu-link d-flex px-5"
-                      data-kt-lang="French"
-                    >
-                      <span className="symbol symbol-20px me-4">
-                        <img
-                          data-kt-element="lang-flag"
-                          className="rounded-1"
-                          src="assets/media/flags/france.svg"
-                          alt=""
-                        />
-                      </span>
-                      <span data-kt-element="lang-name">French</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              <div className="d-flex fw-semibold text-primary fs-base gap-5">
-                <a href="pages/team.html" target="_blank">
-                  Terms
-                </a>
-                <a href="pages/pricing/column.html" target="_blank">
-                  Plans
-                </a>
-                <a href="pages/contact.html" target="_blank">
-                  Contact Us
-                </a>
-              </div>
             </div>
           </div>
         </div>

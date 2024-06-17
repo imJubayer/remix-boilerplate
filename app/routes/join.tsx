@@ -8,8 +8,11 @@ import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 
 import { createUser, getUserByEmail } from "~/models/user.server";
+import { signUpSchema } from "~/schema/authentication";
 import { createUserSession, getUserId } from "~/session.server";
-import { safeRedirect, validateEmail } from "~/utils";
+// import { safeRedirect, validateEmail } from "~/utils";
+import * as yup from "yup";
+import PasswordInput from "~/components/common/password";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await getUserId(request);
@@ -19,52 +22,54 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
-  const email = formData.get("email");
-  const password = formData.get("password");
-  const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
+  const formDataObject = Object.fromEntries(formData.entries());
 
-  if (!validateEmail(email)) {
-    return json(
-      { errors: { email: "Email is invalid", password: null } },
-      { status: 400 },
-    );
-  }
+  const errors = {
+    email: null,
+    first_name: null,
+    last_name: null,
+    password: null,
+  };
 
-  if (typeof password !== "string" || password.length === 0) {
-    return json(
-      { errors: { email: null, password: "Password is required" } },
-      { status: 400 },
-    );
-  }
-
-  if (password.length < 8) {
-    return json(
-      { errors: { email: null, password: "Password is too short" } },
-      { status: 400 },
-    );
-  }
-
-  const existingUser = await getUserByEmail(email);
-  if (existingUser) {
-    return json(
-      {
-        errors: {
-          email: "A user already exists with this email",
-          password: null,
+  try {
+    const validatedData = await signUpSchema.validate(formDataObject, {
+      abortEarly: false,
+    });
+    const { email, first_name, last_name, password, redirectTo } =
+      validatedData;
+    const existingUser = await getUserByEmail(email);
+    if (existingUser) {
+      return json(
+        {
+          errors: {
+            ...errors,
+            email: "User already exist",
+          },
         },
-      },
-      { status: 400 },
-    );
+        { status: 400 },
+      );
+    }
+
+    const user = await createUser(email, first_name, last_name, password);
+
+    return createUserSession({
+      redirectTo: redirectTo || "/",
+      remember: false,
+      request,
+      userId: user.id,
+    });
+  } catch (error) {
+    if (error instanceof yup.ValidationError) {
+      // `inner` property contains an array of validation errors
+      const errorFields: any = {};
+      error.inner.forEach((err: any) => {
+        // Extract the path (field name) and message from each error
+        errorFields[err.path] = err.message;
+      });
+      return json({ errors: errorFields }, { status: 422 });
+    }
+    return json({ errors: error }, { status: 422 });
   }
-
-  const user = await createUser(email, password);
-
-  return createUserSession({
-    redirectTo,
-    remember: false,
-    request,
-    userId: user.id,
-  });
 };
 
 export const meta: MetaFunction = () => [{ title: "Sign Up" }];
@@ -85,89 +90,6 @@ export default function Join() {
   }, [actionData]);
 
   return (
-    // <div className="flex min-h-full flex-col justify-center">
-    //   <div className="mx-auto w-full max-w-md px-8">
-    //     <Form method="post" className="space-y-6">
-    //       <div>
-    //         <label
-    //           htmlFor="email"
-    //           className="block text-sm font-medium text-gray-700"
-    //         >
-    //           Email address
-    //         </label>
-    //         <div className="mt-1">
-    //           <input
-    //             ref={emailRef}
-    //             id="email"
-    //             required
-    //             // eslint-disable-next-line jsx-a11y/no-autofocus
-    //             autoFocus={true}
-    //             name="email"
-    //             type="email"
-    //             autoComplete="email"
-    //             aria-invalid={actionData?.errors?.email ? true : undefined}
-    //             aria-describedby="email-error"
-    //             className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
-    //           />
-    //           {actionData?.errors?.email ? (
-    //             <div className="pt-1 text-red-700" id="email-error">
-    //               {actionData.errors.email}
-    //             </div>
-    //           ) : null}
-    //         </div>
-    //       </div>
-
-    //       <div>
-    //         <label
-    //           htmlFor="password"
-    //           className="block text-sm font-medium text-gray-700"
-    //         >
-    //           Password
-    //         </label>
-    //         <div className="mt-1">
-    //           <input
-    //             id="password"
-    //             ref={passwordRef}
-    //             name="password"
-    //             type="password"
-    //             autoComplete="new-password"
-    //             aria-invalid={actionData?.errors?.password ? true : undefined}
-    //             aria-describedby="password-error"
-    //             className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
-    //           />
-    //           {actionData?.errors?.password ? (
-    //             <div className="pt-1 text-red-700" id="password-error">
-    //               {actionData.errors.password}
-    //             </div>
-    //           ) : null}
-    //         </div>
-    //       </div>
-
-    //       <input type="hidden" name="redirectTo" value={redirectTo} />
-    //       <button
-    //         type="submit"
-    //         className="w-full rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
-    //       >
-    //         Create Account
-    //       </button>
-    //       <div className="flex items-center justify-center">
-    //         <div className="text-center text-sm text-gray-500">
-    //           Already have an account?{" "}
-    //           <Link
-    //             className="text-blue-500 underline"
-    //             to={{
-    //               pathname: "/login",
-    //               search: searchParams.toString(),
-    //             }}
-    //           >
-    //             Log in
-    //           </Link>
-    //         </div>
-    //       </div>
-    //     </Form>
-    //   </div>
-    // </div>
-
     <div
       className="d-flex flex-column flex-root"
       id="kt_app_root"
@@ -255,9 +177,7 @@ export default function Join() {
                     placeholder="Email"
                     name="email"
                     autoComplete="off"
-                    aria-invalid={actionData?.errors?.email ? true : undefined}
-                    aria-describedby="email-error"
-                    className="form-control bg-transparent"
+                    className={`form-control bg-transparent ${actionData?.errors?.email ? "is-invalid" : ""}`}
                   />
                   {actionData?.errors?.email ? (
                     <div className="text-danger" id="email-error">
@@ -266,37 +186,63 @@ export default function Join() {
                   ) : null}
                 </div>
 
+                <div className="fv-row mb-8">
+                  <input
+                    id="first_name"
+                    type="text"
+                    placeholder="First name"
+                    name="first_name"
+                    className={`form-control bg-transparent ${actionData?.errors?.first_name ? "is-invalid" : ""}`}
+                  />
+                  {actionData?.errors?.first_name ? (
+                    <div className="text-danger" id="first-name-error">
+                      {actionData.errors.first_name}
+                    </div>
+                  ) : null}
+                </div>
+
+                <div className="fv-row mb-8">
+                  <input
+                    id="last_name"
+                    type="text"
+                    placeholder="Last name"
+                    name="last_name"
+                    className={`form-control bg-transparent ${actionData?.errors?.last_name ? "is-invalid" : ""}`}
+                  />
+                  {actionData?.errors?.last_name ? (
+                    <div className="text-danger" id="last-name-error">
+                      {actionData.errors.last_name}
+                    </div>
+                  ) : null}
+                </div>
+
                 <div className="fv-row mb-8" data-kt-password-meter="true">
                   <div className="mb-1">
                     <div className="position-relative mb-3">
-                      <input
+                      {/* <input
                         id="password"
                         ref={passwordRef}
-                        aria-describedby="password-error"
-                        className="form-control bg-transparent"
                         type="password"
                         placeholder="Password"
                         name="password"
                         autoComplete="new-password"
-                        aria-invalid={
-                          actionData?.errors?.password ? true : undefined
-                        }
+                        className={`form-control bg-transparent ${actionData?.errors?.password ? "is-invalid" : ""}`}
                       />
-                      {actionData?.errors?.password ? (
-                        <div className="text-danger" id="password-error">
-                          {actionData.errors.password}
-                        </div>
-                      ) : null}
                       <span
                         className="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2"
                         data-kt-password-meter-control="visibility"
                       >
-                        <i className="ki-duotone ki-eye-slash fs-2"></i>
-                        <i className="ki-duotone ki-eye fs-2 d-none"></i>
+                        <FontAwesomeIcon icon={faEye} />
                       </span>
+                      {actionData?.errors?.password ? (
+                        <div className="text-danger" id="password-error">
+                          {actionData.errors.password}
+                        </div>
+                      ) : null} */}
+                      <PasswordInput error={actionData?.errors.password} />
                     </div>
 
-                    <div
+                    {/* <div
                       className="d-flex align-items-center mb-3"
                       data-kt-password-meter-control="highlight"
                     >
@@ -304,7 +250,7 @@ export default function Join() {
                       <div className="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2"></div>
                       <div className="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2"></div>
                       <div className="flex-grow-1 bg-secondary bg-active-success rounded h-5px"></div>
-                    </div>
+                    </div> */}
                   </div>
 
                   <div className="text-muted">
@@ -313,7 +259,7 @@ export default function Join() {
                   </div>
                 </div>
 
-                <div className="fv-row mb-8">
+                {/* <div className="fv-row mb-8">
                   <input
                     placeholder="Repeat Password"
                     name="confirm-password"
@@ -321,7 +267,7 @@ export default function Join() {
                     autoComplete="off"
                     className="form-control bg-transparent"
                   />
-                </div>
+                </div> */}
 
                 <div className="fv-row mb-8">
                   <label className="form-check form-check-inline">
@@ -339,6 +285,7 @@ export default function Join() {
                     </span>
                   </label>
                 </div>
+                <input type="hidden" name="redirectTo" value={redirectTo} />
 
                 <div className="d-grid mb-10">
                   <button
@@ -362,136 +309,6 @@ export default function Join() {
                   </Link>
                 </div>
               </Form>
-            </div>
-
-            <div className="d-flex flex-stack px-lg-10">
-              <div className="me-0">
-                <button
-                  className="btn btn-flex btn-link btn-color-gray-700 btn-active-color-primary rotate fs-base"
-                  data-kt-menu-trigger="click"
-                  data-kt-menu-placement="bottom-start"
-                  data-kt-menu-offset="0px, 0px"
-                >
-                  <img
-                    data-kt-element="current-lang-flag"
-                    className="w-20px h-20px rounded me-3"
-                    src="assets/media/flags/united-states.svg"
-                    alt=""
-                  />
-                  <span data-kt-element="current-lang-name" className="me-1">
-                    English
-                  </span>
-                  <i className="ki-duotone ki-down fs-5 text-muted rotate-180 m-0"></i>
-                </button>
-
-                <div
-                  className="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-4 fs-7"
-                  data-kt-menu="true"
-                  id="kt_auth_lang_menu"
-                >
-                  <div className="menu-item px-3">
-                    <a
-                      href="#"
-                      className="menu-link d-flex px-5"
-                      data-kt-lang="English"
-                    >
-                      <span className="symbol symbol-20px me-4">
-                        <img
-                          data-kt-element="lang-flag"
-                          className="rounded-1"
-                          src="assets/media/flags/united-states.svg"
-                          alt=""
-                        />
-                      </span>
-                      <span data-kt-element="lang-name">English</span>
-                    </a>
-                  </div>
-
-                  <div className="menu-item px-3">
-                    <a
-                      href="#"
-                      className="menu-link d-flex px-5"
-                      data-kt-lang="Spanish"
-                    >
-                      <span className="symbol symbol-20px me-4">
-                        <img
-                          data-kt-element="lang-flag"
-                          className="rounded-1"
-                          src="assets/media/flags/spain.svg"
-                          alt=""
-                        />
-                      </span>
-                      <span data-kt-element="lang-name">Spanish</span>
-                    </a>
-                  </div>
-
-                  <div className="menu-item px-3">
-                    <a
-                      href="#"
-                      className="menu-link d-flex px-5"
-                      data-kt-lang="German"
-                    >
-                      <span className="symbol symbol-20px me-4">
-                        <img
-                          data-kt-element="lang-flag"
-                          className="rounded-1"
-                          src="assets/media/flags/germany.svg"
-                          alt=""
-                        />
-                      </span>
-                      <span data-kt-element="lang-name">German</span>
-                    </a>
-                  </div>
-
-                  <div className="menu-item px-3">
-                    <a
-                      href="#"
-                      className="menu-link d-flex px-5"
-                      data-kt-lang="Japanese"
-                    >
-                      <span className="symbol symbol-20px me-4">
-                        <img
-                          data-kt-element="lang-flag"
-                          className="rounded-1"
-                          src="assets/media/flags/japan.svg"
-                          alt=""
-                        />
-                      </span>
-                      <span data-kt-element="lang-name">Japanese</span>
-                    </a>
-                  </div>
-
-                  <div className="menu-item px-3">
-                    <a
-                      href="#"
-                      className="menu-link d-flex px-5"
-                      data-kt-lang="French"
-                    >
-                      <span className="symbol symbol-20px me-4">
-                        <img
-                          data-kt-element="lang-flag"
-                          className="rounded-1"
-                          src="assets/media/flags/france.svg"
-                          alt=""
-                        />
-                      </span>
-                      <span data-kt-element="lang-name">French</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              <div className="d-flex fw-semibold text-primary fs-base gap-5">
-                <a href="pages/team.html" target="_blank">
-                  Terms
-                </a>
-                <a href="pages/pricing/column.html" target="_blank">
-                  Plans
-                </a>
-                <a href="pages/contact.html" target="_blank">
-                  Contact Us
-                </a>
-              </div>
             </div>
           </div>
         </div>
