@@ -4,7 +4,13 @@ import type {
   MetaFunction,
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  useActionData,
+  useNavigation,
+  useSearchParams,
+} from "@remix-run/react";
 import { useEffect, useRef } from "react";
 
 import { createUser, getUserByEmail } from "~/models/user.server";
@@ -13,6 +19,8 @@ import { createUserSession, getUserId } from "~/session.server";
 // import { safeRedirect, validateEmail } from "~/utils";
 import * as yup from "yup";
 import PasswordInput from "~/components/common/password";
+import sendMail from "~/utils/mailer";
+import { regEmailTempalte } from "~/utils/helper";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await getUserId(request);
@@ -37,23 +45,22 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     });
     const { email, first_name, last_name, password, redirectTo } =
       validatedData;
-    const existingUser = await getUserByEmail(email);
-    if (existingUser) {
-      return json(
-        {
-          errors: {
-            ...errors,
-            email: "User already exist",
-          },
-        },
-        { status: 400 },
-      );
-    }
 
     const user = await createUser(email, first_name, last_name, password);
 
+    try {
+      sendMail({
+        to: email,
+        subject: "Welcome to AllinOne",
+        text: `Assalamu Alaikum`,
+        html: regEmailTempalte(first_name),
+      });
+    } catch (error: any) {
+      // return json({ success: false, error: error.message });
+    }
+
     return createUserSession({
-      redirectTo: redirectTo || "/",
+      redirectTo: "/dashboard",
       remember: false,
       request,
       userId: user.id,
@@ -75,6 +82,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export const meta: MetaFunction = () => [{ title: "Sign Up" }];
 
 export default function Join() {
+  const transition = useNavigation();
+  const isSubmitting = transition.state === "submitting";
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") ?? undefined;
   const actionData = useActionData<typeof action>();
@@ -101,7 +110,8 @@ export default function Join() {
         <div className="d-flex flex-center w-lg-50 pt-15 pt-lg-0 px-10">
           <div className="d-flex flex-center flex-lg-start flex-column">
             <a href="index.html" className="mb-7">
-              <img alt="Logo" src="assets/media/logos/custom-3.svg" />
+              <h1 className="text-white">AllinOne</h1>
+              {/* <img alt="Logo" src="assets/media/logos/custom-3.svg" /> */}
             </a>
 
             <h2 className="text-white fw-normal m-0">
@@ -122,12 +132,12 @@ export default function Join() {
                 <div className="text-center mb-11">
                   <h1 className="text-gray-900 fw-bolder mb-3">Sign Up</h1>
 
-                  <div className="text-gray-500 fw-semibold fs-6">
+                  {/* <div className="text-gray-500 fw-semibold fs-6">
                     Your Social Campaigns
-                  </div>
+                  </div> */}
                 </div>
 
-                <div className="row g-3 mb-9">
+                {/* <div className="row g-3 mb-9">
                   <div className="col-md-6">
                     <a
                       href="#"
@@ -166,7 +176,7 @@ export default function Join() {
                   <span className="w-125px text-gray-500 fw-semibold fs-7">
                     Or with email
                   </span>
-                </div>
+                </div> */}
 
                 <div className="fv-row mb-8">
                   <input
@@ -176,7 +186,7 @@ export default function Join() {
                     autoFocus={true}
                     placeholder="Email"
                     name="email"
-                    autoComplete="off"
+                    autoComplete="on"
                     className={`form-control bg-transparent ${actionData?.errors?.email ? "is-invalid" : ""}`}
                   />
                   {actionData?.errors?.email ? (
@@ -219,38 +229,8 @@ export default function Join() {
                 <div className="fv-row mb-8" data-kt-password-meter="true">
                   <div className="mb-1">
                     <div className="position-relative mb-3">
-                      {/* <input
-                        id="password"
-                        ref={passwordRef}
-                        type="password"
-                        placeholder="Password"
-                        name="password"
-                        autoComplete="new-password"
-                        className={`form-control bg-transparent ${actionData?.errors?.password ? "is-invalid" : ""}`}
-                      />
-                      <span
-                        className="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2"
-                        data-kt-password-meter-control="visibility"
-                      >
-                        <FontAwesomeIcon icon={faEye} />
-                      </span>
-                      {actionData?.errors?.password ? (
-                        <div className="text-danger" id="password-error">
-                          {actionData.errors.password}
-                        </div>
-                      ) : null} */}
                       <PasswordInput error={actionData?.errors.password} />
                     </div>
-
-                    {/* <div
-                      className="d-flex align-items-center mb-3"
-                      data-kt-password-meter-control="highlight"
-                    >
-                      <div className="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2"></div>
-                      <div className="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2"></div>
-                      <div className="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2"></div>
-                      <div className="flex-grow-1 bg-secondary bg-active-success rounded h-5px"></div>
-                    </div> */}
                   </div>
 
                   <div className="text-muted">
@@ -258,16 +238,6 @@ export default function Join() {
                     symbols.
                   </div>
                 </div>
-
-                {/* <div className="fv-row mb-8">
-                  <input
-                    placeholder="Repeat Password"
-                    name="confirm-password"
-                    type="password"
-                    autoComplete="off"
-                    className="form-control bg-transparent"
-                  />
-                </div> */}
 
                 <div className="fv-row mb-8">
                   <label className="form-check form-check-inline">
@@ -290,14 +260,15 @@ export default function Join() {
                 <div className="d-grid mb-10">
                   <button
                     type="submit"
+                    disabled={isSubmitting}
                     id="kt_sign_up_submit"
                     className="btn btn-primary"
                   >
-                    <span className="indicator-label">Sign up</span>
-
-                    <span className="indicator-progress">
-                      Please wait...
-                      <span className="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    <span className="indicator-label">
+                      Sign up{" "}
+                      {isSubmitting && (
+                        <span className="spinner-border spinner-border-sm align-middle ms-2"></span>
+                      )}
                     </span>
                   </button>
                 </div>

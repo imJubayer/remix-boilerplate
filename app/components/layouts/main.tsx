@@ -1,11 +1,13 @@
-import { faHome, faRightLong } from "@fortawesome/free-solid-svg-icons";
+import { faChevronRight, faHome } from "@fortawesome/free-solid-svg-icons";
+import { Toaster } from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Footer from "./footer";
 import Sidebar from "./sidebar";
-import { Children } from "react";
 import { BreadCrumb } from "~/types/common";
 import { Link } from "@remix-run/react";
-import React from "react";
+import React, { useEffect } from "react";
+import { useUser } from "~/utils";
+import { MetaFunction } from "@remix-run/node";
 interface DashboardLayoutProps {
   breadCrumb?: BreadCrumb[];
   tabs?: React.ReactNode;
@@ -14,8 +16,21 @@ interface DashboardLayoutProps {
   title: string;
   secondary?: React.ReactNode;
   loading?: boolean;
+  headerTitle?: string;
 }
-const MainLayout = ({ title, children, breadCrumb }: DashboardLayoutProps) => {
+
+export const meta: MetaFunction = () => [{ title: "AllinOne" }];
+
+const MainLayout = ({
+  headerTitle,
+  title,
+  children,
+  breadCrumb,
+}: DashboardLayoutProps) => {
+  const user = useUser();
+  useEffect(() => {
+    document.title = headerTitle ? `AllinOne | ${headerTitle}` : "AllinOne";
+  }, [headerTitle]);
   return (
     <div className="d-flex flex-column flex-root app-root" id="kt_app_root">
       <div className="app-page flex-column flex-column-fluid" id="kt_app_page">
@@ -83,21 +98,21 @@ const MainLayout = ({ title, children, breadCrumb }: DashboardLayoutProps) => {
                       <Link to="/dashboard" className="text-hover-primary">
                         <FontAwesomeIcon
                           icon={faHome}
-                          className="fs-6 text-gray-700"
+                          className="fs-8 text-gray-700"
                         />
                       </Link>
                     </li>
                     {breadCrumb?.length &&
                       breadCrumb.map((item, index) => (
                         <React.Fragment key={index}>
-                          <li className="breadcrumb-item">
+                          <li className="breadcrumb-item text-gray-700 fw-bold lh-1 mx-n1">
                             <FontAwesomeIcon
-                              icon={faRightLong}
-                              className="fs-6 text-gray-700"
+                              icon={faChevronRight}
+                              className="fs-8 px-2 text-gray-700"
                             />
                           </li>
                           <li
-                            className={`breadcrumb-item text-gray-700 fw-bold lh-1 mx-n1 ${index === breadCrumb.length - 1 ? "text-gray-500" : ""}`}
+                            className={`breadcrumb-item fw-bold lh-1 mx-n1 ${index === breadCrumb.length - 1 ? "text-gray-600" : ""}`}
                           >
                             {item.link && index !== breadCrumb.length - 1 ? (
                               <Link
@@ -176,7 +191,7 @@ const MainLayout = ({ title, children, breadCrumb }: DashboardLayoutProps) => {
 
                         <div className="d-flex flex-column">
                           <div className="fw-bold d-flex align-items-center fs-5">
-                            Eugenia
+                            {user.profile.first_name}
                             <span className="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">
                               Pro
                             </span>
@@ -185,7 +200,7 @@ const MainLayout = ({ title, children, breadCrumb }: DashboardLayoutProps) => {
                             href="#"
                             className="fw-semibold text-muted text-hover-primary fs-7"
                           >
-                            eugenia@kt.com
+                            {user.email}
                           </a>
                         </div>
                       </div>
@@ -404,109 +419,6 @@ const MainLayout = ({ title, children, breadCrumb }: DashboardLayoutProps) => {
                       </div>
                     </div>
 
-                    <div
-                      className="menu-item px-5"
-                      data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
-                      data-kt-menu-placement="right-end"
-                      data-kt-menu-offset="-15px, 0"
-                    >
-                      <a href="#" className="menu-link px-5">
-                        <span className="menu-title position-relative">
-                          Language
-                          <span className="fs-8 rounded bg-light px-3 py-2 position-absolute translate-middle-y top-50 end-0">
-                            English
-                            <img
-                              className="w-15px h-15px rounded-1 ms-2"
-                              src="assets/media/flags/united-states.svg"
-                              alt=""
-                            />
-                          </span>
-                        </span>
-                      </a>
-
-                      <div className="menu-sub menu-sub-dropdown w-175px py-4">
-                        <div className="menu-item px-3">
-                          <a
-                            href="account/settings.html"
-                            className="menu-link d-flex px-5 active"
-                          >
-                            <span className="symbol symbol-20px me-4">
-                              <img
-                                className="rounded-1"
-                                src="assets/media/flags/united-states.svg"
-                                alt=""
-                              />
-                            </span>
-                            English
-                          </a>
-                        </div>
-
-                        <div className="menu-item px-3">
-                          <a
-                            href="account/settings.html"
-                            className="menu-link d-flex px-5"
-                          >
-                            <span className="symbol symbol-20px me-4">
-                              <img
-                                className="rounded-1"
-                                src="assets/media/flags/spain.svg"
-                                alt=""
-                              />
-                            </span>
-                            Spanish
-                          </a>
-                        </div>
-
-                        <div className="menu-item px-3">
-                          <a
-                            href="account/settings.html"
-                            className="menu-link d-flex px-5"
-                          >
-                            <span className="symbol symbol-20px me-4">
-                              <img
-                                className="rounded-1"
-                                src="assets/media/flags/germany.svg"
-                                alt=""
-                              />
-                            </span>
-                            German
-                          </a>
-                        </div>
-
-                        <div className="menu-item px-3">
-                          <a
-                            href="account/settings.html"
-                            className="menu-link d-flex px-5"
-                          >
-                            <span className="symbol symbol-20px me-4">
-                              <img
-                                className="rounded-1"
-                                src="assets/media/flags/japan.svg"
-                                alt=""
-                              />
-                            </span>
-                            Japanese
-                          </a>
-                        </div>
-
-                        <div className="menu-item px-3">
-                          <a
-                            href="account/settings.html"
-                            className="menu-link d-flex px-5"
-                          >
-                            <span className="symbol symbol-20px me-4">
-                              <img
-                                className="rounded-1"
-                                src="assets/media/flags/france.svg"
-                                alt=""
-                              />
-                            </span>
-                            French
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-
                     <div className="menu-item px-5 my-1">
                       <a
                         href="account/settings.html"
@@ -554,6 +466,24 @@ const MainLayout = ({ title, children, breadCrumb }: DashboardLayoutProps) => {
 
             <Footer />
           </div>
+        </div>
+        <div id="toaster">
+          <Toaster
+            toastOptions={{
+              position: "top-right",
+              success: {
+                style: {
+                  background: "green",
+                  color: "white",
+                },
+              },
+              error: {
+                style: {
+                  background: "red",
+                },
+              },
+            }}
+          />
         </div>
       </div>
     </div>

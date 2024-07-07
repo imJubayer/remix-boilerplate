@@ -8,16 +8,62 @@ generator client {
 }
 
 model User {
-  id    String @id @default(cuid())
-  first_name String
-  last_name String
-  email String @unique
+  id        String    @id @default(cuid())
+  email     String    @unique
+  deletedAt DateTime? // Soft delete field
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  password  Password?
+  role      Role?     @relation(fields: [roleId], references: [id])
+  roleId    String?
+  status    String     @default("active")
+
+  notes     Note[]
+  profile   Profile?
+}
+
+model Role {
+  id            String       @id @default(cuid())
+  name          String       @unique
+  description   String       @default("")
+  is_modifiable Boolean     @default(true)
+  users         User[]
+
+  permissions Permission[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
 
-  password Password?
-  notes    Note[]
+model Permission {
+  id          String @id @default(cuid())
+  entity      String // E.g. user, admin.
+  action      String // E.g. create, read, update, delete
+  access      String // E.g. own or any
+  description String @default("")
+  roles       Role[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  @@unique([action, entity, access])
+}
+
+model Profile {
+  id          String   @id @default(cuid())
+  first_name  String
+  last_name   String
+  phone       String?
+  gender      String?
+  age         Int?
+  birth       DateTime?
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String   @unique
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Password {
@@ -37,4 +83,18 @@ model Note {
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String
+}
+
+model Category {
+  id            Int @id @default(autoincrement())
+  name          String
+  description   String?
+  status        String
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now())
+
+  parentId      Int?
+  parent        Category?  @relation("Subcategories", fields: [parentId], references: [id])
+  subcategories Category[] @relation("Subcategories")
 }

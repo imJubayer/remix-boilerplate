@@ -1,447 +1,393 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { type ActionFunction, type LoaderFunctionArgs } from "@remix-run/node";
 
-import { getNoteListItems } from "~/models/note.server";
-import { requireUserId } from "~/session.server";
-import { useUser } from "~/utils";
+// import { abort, useUser, hasRole } from "~/utils";
 import MainLayout from "~/components/layouts/main";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClock } from "@fortawesome/free-solid-svg-icons";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const userId = await requireUserId(request);
-  const noteListItems = await getNoteListItems({ userId });
-  return json({ noteListItems });
+  const requiredRoles = ["admin"];
+  // const user = await getUser(request);
+  // if (!hasRole(user, requiredRoles)) {
+  //   abort(403);
+  // }
+  return 1;
+};
+
+export const action: ActionFunction = async ({ request }) => {
+  const formData = await request.formData();
 };
 
 export default function Dashboard() {
-  const data = useLoaderData<typeof loader>();
-  const user = useUser();
-
   const breadcrumbItems = [{ title: "Dashboard", link: "/dashboard" }];
   return (
     <>
-      <MainLayout title="Account" breadCrumb={breadcrumbItems}>
-        <div className="card mb-5 mb-xl-10">
-          <div className="card-body pt-9 pb-0">
-            <div className="d-flex flex-wrap flex-sm-nowrap mb-3">
-              <div className="me-7 mb-4">
-                <div className="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
-                  <img src="assets/media/avatars/300-2.jpg" alt="image" />
-                  <div className="position-absolute translate-middle bottom-0 start-100 mb-6 bg-success rounded-circle border border-4 border-body h-20px w-20px"></div>
+      <MainLayout
+        title="Account"
+        breadCrumb={breadcrumbItems}
+        headerTitle="Dashboard"
+      >
+        <div className="d-flex flex-wrap flex-md-nowrap">
+          <div className="me-5">
+            <div className="card">
+              <div className="card-body py-4">
+                <div className="me-md-5 w-100">
+                  <div className="d-flex border border-gray-300 border-dashed rounded p-6 mb-6">
+                    <div className="d-flex align-items-center flex-grow-1 me-2 me-sm-5">
+                      <div className="symbol symbol-50px me-4">
+                        <span className="symbol-label">
+                          <FontAwesomeIcon
+                            icon={faClock}
+                            className="text-primary fs-2qx"
+                          />
+                        </span>
+                      </div>
+
+                      <div className="me-2">
+                        <a
+                          href="#"
+                          className="text-gray-800 text-hover-primary fs-6 fw-bold"
+                        >
+                          Attendance
+                        </a>
+                        <span className="text-gray-500 fw-bold d-block fs-7">
+                          Great, you always attending class. keep it up
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="d-flex align-items-center">
+                      <span className="text-gray-900 fw-bolder fs-2x">73</span>
+                      <span className="fw-semibold fs-2 text-gray-600 mx-1 pt-1">
+                        /
+                      </span>
+                      <span className="text-gray-600 fw-semibold fs-2 me-3 pt-2">
+                        76
+                      </span>
+                      <span className="badge badge-lg badge-light-success align-self-center px-2">
+                        95%
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="d-flex border border-gray-300 border-dashed rounded p-6 mb-6">
+                    <div className="d-flex align-items-center flex-grow-1 me-2 me-sm-5">
+                      <div className="symbol symbol-50px me-4">
+                        <span className="symbol-label">
+                          <FontAwesomeIcon
+                            icon={faClock}
+                            className="text-primary fs-2qx"
+                          />
+                        </span>
+                      </div>
+
+                      <div className="me-2">
+                        <a
+                          href="#"
+                          className="text-gray-800 text-hover-primary fs-6 fw-bold"
+                        >
+                          Homeworks
+                        </a>
+                        <span className="text-gray-500 fw-bold d-block fs-7">
+                          Don’t forget to turn in your task
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="d-flex align-items-center">
+                      <span className="text-gray-900 fw-bolder fs-2x">207</span>
+                      <span className="fw-semibold fs-2 text-gray-600 mx-1 pt-1">
+                        /
+                      </span>
+                      <span className="text-gray-600 fw-semibold fs-2 me-3 pt-2">
+                        214
+                      </span>
+                      <span className="badge badge-lg badge-light-success align-self-center px-2">
+                        92%
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="d-flex border border-gray-300 border-dashed rounded p-6 mb-6">
+                    <div className="d-flex align-items-center flex-grow-1 me-2 me-sm-5">
+                      <div className="symbol symbol-50px me-4">
+                        <span className="symbol-label">
+                          <FontAwesomeIcon
+                            icon={faClock}
+                            className="text-primary fs-2qx"
+                          />
+                        </span>
+                      </div>
+
+                      <div className="me-2">
+                        <a
+                          href="#"
+                          className="text-gray-800 text-hover-primary fs-6 fw-bold"
+                        >
+                          Tests
+                        </a>
+                        <span className="text-gray-500 fw-bold d-block fs-7">
+                          You take 12 subjects at this semester
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="d-flex align-items-center">
+                      <span className="text-gray-900 fw-bolder fs-2x">27</span>
+                      <span className="fw-semibold fs-2 text-gray-600 mx-1 pt-1">
+                        /
+                      </span>
+                      <span className="text-gray-600 fw-semibold fs-2 me-3 pt-2">
+                        38
+                      </span>
+                      <span className="badge badge-lg badge-light-warning align-self-center px-2">
+                        80%
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
+            </div>
+          </div>
+          <div className="ms-5">
+            <div className="card">
+              <div className="card-body py-4">
+                <div className="me-md-5 w-100">
+                  <div className="d-flex border border-gray-300 border-dashed rounded p-6 mb-6">
+                    <div className="d-flex align-items-center flex-grow-1 me-2 me-sm-5">
+                      <div className="symbol symbol-50px me-4">
+                        <span className="symbol-label">
+                          <i className="ki-duotone ki-timer fs-2qx text-primary">
+                            <span className="path1"></span>
+                            <span className="path2"></span>
+                            <span className="path3"></span>
+                          </i>
+                        </span>
+                      </div>
 
-              <div className="flex-grow-1">
-                <div className="d-flex justify-content-between align-items-start flex-wrap mb-2">
-                  <div className="d-flex flex-column">
-                    <div className="d-flex align-items-center mb-2">
-                      <a
-                        href="#"
-                        className="text-gray-900 text-hover-primary fs-2 fw-bold me-1"
-                      >
-                        Eugenia
-                      </a>
-                      <a href="#">
-                        <i className="ki-duotone ki-verify fs-1 text-primary">
-                          <span className="path1"></span>
-                          <span className="path2"></span>
-                        </i>
-                      </a>
-                      <a
-                        href="#"
-                        className="btn btn-sm btn-light-success fw-bold ms-2 fs-8 py-1 px-3"
-                        data-bs-toggle="modal"
-                        data-bs-target="#kt_modal_upgrade_plan"
-                      >
-                        Upgrade to Pro
-                      </a>
-                    </div>
-
-                    <div className="d-flex flex-wrap fw-semibold fs-6 mb-4 pe-2">
-                      <a
-                        href="#"
-                        className="d-flex align-items-center text-gray-500 text-hover-primary me-5 mb-2"
-                      >
-                        <i className="ki-duotone ki-profile-circle fs-4 me-1">
-                          <span className="path1"></span>
-                          <span className="path2"></span>
-                          <span className="path3"></span>
-                        </i>
-                        Developer
-                      </a>
-                      <a
-                        href="#"
-                        className="d-flex align-items-center text-gray-500 text-hover-primary me-5 mb-2"
-                      >
-                        <i className="ki-duotone ki-geolocation fs-4 me-1">
-                          <span className="path1"></span>
-                          <span className="path2"></span>
-                        </i>
-                        SF, Bay Area
-                      </a>
-                      <a
-                        href="#"
-                        className="d-flex align-items-center text-gray-500 text-hover-primary mb-2"
-                      >
-                        <i className="ki-duotone ki-sms fs-4 me-1">
-                          <span className="path1"></span>
-                          <span className="path2"></span>
-                        </i>
-                        eugenia@kt.com
-                      </a>
-                    </div>
-                  </div>
-
-                  <div className="d-flex my-4">
-                    <a
-                      href="#"
-                      className="btn btn-sm btn-light me-2"
-                      id="kt_user_follow_button"
-                    >
-                      <i className="ki-duotone ki-check fs-2 d-none"></i>
-
-                      <span className="indicator-label">Follow</span>
-
-                      <span className="indicator-progress">
-                        Please wait...
-                        <span className="spinner-border spinner-border-sm align-middle ms-2"></span>
-                      </span>
-                    </a>
-                    <a
-                      href="#"
-                      className="btn btn-sm btn-light me-2"
-                      data-bs-toggle="modal"
-                      data-bs-target="#kt_modal_offer_a_deal"
-                    >
-                      Hire Me
-                    </a>
-
-                    <div className="me-0">
-                      <button
-                        className="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
-                        data-kt-menu-trigger="click"
-                        data-kt-menu-placement="bottom-end"
-                      >
-                        <i className="ki-solid ki-dots-horizontal fs-1"></i>
-                      </button>
-
-                      <div
-                        className="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3"
-                        data-kt-menu="true"
-                      >
-                        <div className="menu-item px-3">
-                          <div className="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">
-                            Payments
-                          </div>
-                        </div>
-
-                        <div className="menu-item px-3">
-                          <a href="#" className="menu-link px-3">
-                            Create Invoice
-                          </a>
-                        </div>
-
-                        <div className="menu-item px-3">
-                          <a href="#" className="menu-link flex-stack px-3">
-                            Create Payment
-                            <span
-                              className="ms-2"
-                              data-bs-toggle="tooltip"
-                              title="Specify a target name for future usage and reference"
-                            >
-                              <i className="ki-duotone ki-information fs-6">
-                                <span className="path1"></span>
-                                <span className="path2"></span>
-                                <span className="path3"></span>
-                              </i>
-                            </span>
-                          </a>
-                        </div>
-
-                        <div className="menu-item px-3">
-                          <a href="#" className="menu-link px-3">
-                            Generate Bill
-                          </a>
-                        </div>
-
-                        <div
-                          className="menu-item px-3"
-                          data-kt-menu-trigger="hover"
-                          data-kt-menu-placement="right-end"
+                      <div className="me-2">
+                        <a
+                          href="#"
+                          className="text-gray-800 text-hover-primary fs-6 fw-bold"
                         >
-                          <a href="#" className="menu-link px-3">
-                            <span className="menu-title">Subscription</span>
-                            <span className="menu-arrow"></span>
-                          </a>
-
-                          <div className="menu-sub menu-sub-dropdown w-175px py-4">
-                            <div className="menu-item px-3">
-                              <a href="#" className="menu-link px-3">
-                                Plans
-                              </a>
-                            </div>
-
-                            <div className="menu-item px-3">
-                              <a href="#" className="menu-link px-3">
-                                Billing
-                              </a>
-                            </div>
-
-                            <div className="menu-item px-3">
-                              <a href="#" className="menu-link px-3">
-                                Statements
-                              </a>
-                            </div>
-
-                            <div className="separator my-2"></div>
-
-                            <div className="menu-item px-3">
-                              <div className="menu-content px-3">
-                                <label className="form-check form-switch form-check-custom form-check-solid">
-                                  <input
-                                    className="form-check-input w-30px h-20px"
-                                    type="checkbox"
-                                    value="1"
-                                    name="notifications"
-                                  />
-
-                                  <span className="form-check-label text-muted fs-6">
-                                    Recuring
-                                  </span>
-                                </label>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="menu-item px-3 my-1">
-                          <a href="#" className="menu-link px-3">
-                            Settings
-                          </a>
-                        </div>
+                          Attendance
+                        </a>
+                        <span className="text-gray-500 fw-bold d-block fs-7">
+                          Great, you always attending class. keep it up
+                        </span>
                       </div>
                     </div>
-                  </div>
-                </div>
 
-                <div className="d-flex flex-wrap flex-stack">
-                  <div className="d-flex flex-column flex-grow-1 pe-8">
-                    <div className="d-flex flex-wrap">
-                      <div className="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
-                        <div className="d-flex align-items-center">
-                          <i className="ki-duotone ki-arrow-up fs-2 text-success me-2">
-                            <span className="path1"></span>
-                            <span className="path2"></span>
-                          </i>
-                          <div
-                            className="fs-2 fw-bold"
-                            data-kt-countup="true"
-                            data-kt-countup-value="4500"
-                            data-kt-countup-prefix="$"
-                          >
-                            0
-                          </div>
-                        </div>
-
-                        <div className="fw-semibold fs-6 text-gray-500">
-                          Earnings
-                        </div>
-                      </div>
-
-                      <div className="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
-                        <div className="d-flex align-items-center">
-                          <i className="ki-duotone ki-arrow-down fs-2 text-danger me-2">
-                            <span className="path1"></span>
-                            <span className="path2"></span>
-                          </i>
-                          <div
-                            className="fs-2 fw-bold"
-                            data-kt-countup="true"
-                            data-kt-countup-value="75"
-                          >
-                            0
-                          </div>
-                        </div>
-
-                        <div className="fw-semibold fs-6 text-gray-500">
-                          Projects
-                        </div>
-                      </div>
-
-                      <div className="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
-                        <div className="d-flex align-items-center">
-                          <i className="ki-duotone ki-arrow-up fs-2 text-success me-2">
-                            <span className="path1"></span>
-                            <span className="path2"></span>
-                          </i>
-                          <div
-                            className="fs-2 fw-bold"
-                            data-kt-countup="true"
-                            data-kt-countup-value="60"
-                            data-kt-countup-prefix="%"
-                          >
-                            0
-                          </div>
-                        </div>
-
-                        <div className="fw-semibold fs-6 text-gray-500">
-                          Success Rate
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="d-flex align-items-center w-200px w-sm-300px flex-column mt-3">
-                    <div className="d-flex justify-content-between w-100 mt-auto mb-2">
-                      <span className="fw-semibold fs-6 text-gray-500">
-                        Profile Compleation
+                    <div className="d-flex align-items-center">
+                      <span className="text-gray-900 fw-bolder fs-2x">73</span>
+                      <span className="fw-semibold fs-2 text-gray-600 mx-1 pt-1">
+                        /
                       </span>
-                      <span className="fw-bold fs-6">50%</span>
+                      <span className="text-gray-600 fw-semibold fs-2 me-3 pt-2">
+                        76
+                      </span>
+                      <span className="badge badge-lg badge-light-success align-self-center px-2">
+                        95%
+                      </span>
                     </div>
-                    {/* <div className="h-5px mx-3 w-100 bg-light mb-3">
-																<div className="bg-success rounded h-5px" role="progressbar" style={{ width: '50%' }} aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-															</div> */}
+                  </div>
+
+                  <div className="d-flex border border-gray-300 border-dashed rounded p-6 mb-6">
+                    <div className="d-flex align-items-center flex-grow-1 me-2 me-sm-5">
+                      <div className="symbol symbol-50px me-4">
+                        <span className="symbol-label">
+                          <i className="ki-duotone ki-element-11 fs-2qx text-primary">
+                            <span className="path1"></span>
+                            <span className="path2"></span>
+                            <span className="path3"></span>
+                            <span className="path4"></span>
+                          </i>
+                        </span>
+                      </div>
+
+                      <div className="me-2">
+                        <a
+                          href="#"
+                          className="text-gray-800 text-hover-primary fs-6 fw-bold"
+                        >
+                          Homeworks
+                        </a>
+                        <span className="text-gray-500 fw-bold d-block fs-7">
+                          Don’t forget to turn in your task
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="d-flex align-items-center">
+                      <span className="text-gray-900 fw-bolder fs-2x">207</span>
+                      <span className="fw-semibold fs-2 text-gray-600 mx-1 pt-1">
+                        /
+                      </span>
+                      <span className="text-gray-600 fw-semibold fs-2 me-3 pt-2">
+                        214
+                      </span>
+                      <span className="badge badge-lg badge-light-success align-self-center px-2">
+                        92%
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="d-flex border border-gray-300 border-dashed rounded p-6 mb-6">
+                    <div className="d-flex align-items-center flex-grow-1 me-2 me-sm-5">
+                      <div className="symbol symbol-50px me-4">
+                        <span className="symbol-label">
+                          <i className="ki-duotone ki-abstract-24 fs-2qx text-primary">
+                            <span className="path1"></span>
+                            <span className="path2"></span>
+                          </i>
+                        </span>
+                      </div>
+
+                      <div className="me-2">
+                        <a
+                          href="#"
+                          className="text-gray-800 text-hover-primary fs-6 fw-bold"
+                        >
+                          Tests
+                        </a>
+                        <span className="text-gray-500 fw-bold d-block fs-7">
+                          You take 12 subjects at this semester
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="d-flex align-items-center">
+                      <span className="text-gray-900 fw-bolder fs-2x">27</span>
+                      <span className="fw-semibold fs-2 text-gray-600 mx-1 pt-1">
+                        /
+                      </span>
+                      <span className="text-gray-600 fw-semibold fs-2 me-3 pt-2">
+                        38
+                      </span>
+                      <span className="badge badge-lg badge-light-warning align-self-center px-2">
+                        80%
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <div className="card mb-5 mb-xl-10" id="kt_profile_details_view">
-          <div className="card-header cursor-pointer">
-            <div className="card-title m-0">
-              <h3 className="fw-bold m-0">Profile Details</h3>
-            </div>
-
-            <a
-              href="account/settings.html"
-              className="btn btn-sm btn-primary align-self-center"
-            >
-              Edit Profile
-            </a>
-          </div>
-
-          <div className="card-body p-9">
-            <div className="row mb-7">
-              <label className="col-lg-4 fw-semibold text-muted">
-                Full Name
-              </label>
-
-              <div className="col-lg-8">
-                <span className="fw-bold fs-6 text-gray-800">Max Smith</span>
-              </div>
-            </div>
-
-            <div className="row mb-7">
-              <label className="col-lg-4 fw-semibold text-muted">Company</label>
-
-              <div className="col-lg-8 fv-row">
-                <span className="fw-semibold text-gray-800 fs-6">
-                  Keenthemes
+        <div className="col-xl-12 mt-5 mb-5 mb-xl-10">
+          <div className="card card-flush h-xl-100">
+            <div className="card-header pt-5">
+              <h3 className="card-title align-items-start flex-column">
+                <span className="card-label fw-bold text-gray-900">
+                  Delivery Stats
                 </span>
-              </div>
-            </div>
-
-            <div className="row mb-7">
-              <label className="col-lg-4 fw-semibold text-muted">
-                Contact Phone
-                <span
-                  className="ms-1"
-                  data-bs-toggle="tooltip"
-                  title="Phone number must be active"
-                >
-                  <i className="ki-duotone ki-information fs-7">
-                    <span className="path1"></span>
-                    <span className="path2"></span>
-                    <span className="path3"></span>
-                  </i>
+                <span className="text-gray-500 mt-1 fw-semibold fs-6">
+                  Users from all channels
                 </span>
-              </label>
+              </h3>
 
-              <div className="col-lg-8 d-flex align-items-center">
-                <span className="fw-bold fs-6 text-gray-800 me-2">
-                  044 3276 454 935
-                </span>
-                <span className="badge badge-success">Verified</span>
-              </div>
-            </div>
-
-            <div className="row mb-7">
-              <label className="col-lg-4 fw-semibold text-muted">
-                Company Site
-              </label>
-
-              <div className="col-lg-8">
-                <a
-                  href="#"
-                  className="fw-semibold fs-6 text-gray-800 text-hover-primary"
-                >
-                  keenthemes.com
-                </a>
-              </div>
-            </div>
-
-            <div className="row mb-7">
-              <label className="col-lg-4 fw-semibold text-muted">
-                Country
-                <span
-                  className="ms-1"
-                  data-bs-toggle="tooltip"
-                  title="Country of origination"
-                >
-                  <i className="ki-duotone ki-information fs-7">
-                    <span className="path1"></span>
-                    <span className="path2"></span>
-                    <span className="path3"></span>
-                  </i>
-                </span>
-              </label>
-
-              <div className="col-lg-8">
-                <span className="fw-bold fs-6 text-gray-800">Germany</span>
-              </div>
-            </div>
-
-            <div className="row mb-7">
-              <label className="col-lg-4 fw-semibold text-muted">
-                Communication
-              </label>
-
-              <div className="col-lg-8">
-                <span className="fw-bold fs-6 text-gray-800">Email, Phone</span>
-              </div>
-            </div>
-
-            <div className="row mb-10">
-              <label className="col-lg-4 fw-semibold text-muted">
-                Allow Changes
-              </label>
-
-              <div className="col-lg-8">
-                <span className="fw-semibold fs-6 text-gray-800">Yes</span>
-              </div>
-            </div>
-
-            <div className="notice d-flex bg-light-warning rounded border-warning border border-dashed p-6">
-              <i className="ki-duotone ki-information fs-2tx text-warning me-4">
-                <span className="path1"></span>
-                <span className="path2"></span>
-                <span className="path3"></span>
-              </i>
-
-              <div className="d-flex flex-stack flex-grow-1">
-                <div className="fw-semibold">
-                  <h4 className="text-gray-900 fw-bold">
-                    We need your attention!
-                  </h4>
-                  <div className="fs-6 text-gray-700">
-                    Your payment was declined. To start using tools, please
-                    <a className="fw-bold" href="account/billing.html">
-                      Add Payment Method
+              <div className="card-toolbar">
+                <ul className="nav" id="kt_chart_widget_11_tabs">
+                  <li className="nav-item">
+                    <a
+                      className="nav-link btn btn-sm btn-color-muted btn-active btn-active-light fw-bold px-4 me-1"
+                      data-bs-toggle="tab"
+                      id="kt_charts_widget_11_tab_1"
+                      href="#kt_chart_widget_11_tab_content_1"
+                    >
+                      2020
                     </a>
-                    .
+                  </li>
+                  <li className="nav-item">
+                    <a
+                      className="nav-link btn btn-sm btn-color-muted btn-active btn-active-light fw-bold px-4 me-1"
+                      data-bs-toggle="tab"
+                      id="kt_charts_widget_11_tab_2"
+                      href="#kt_chart_widget_11_tab_content_2"
+                    >
+                      2021
+                    </a>
+                  </li>
+                  <li className="nav-item">
+                    <a
+                      className="nav-link btn btn-sm btn-color-muted btn-active btn-active-light fw-bold px-4 me-1 active"
+                      data-bs-toggle="tab"
+                      id="kt_charts_widget_11_tab_3"
+                      href="#kt_chart_widget_11_tab_content_3"
+                    >
+                      Month
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="card-body pb-0 pt-4">
+              <div className="tab-content">
+                <div
+                  className="tab-pane fade"
+                  id="kt_chart_widget_11_tab_content_1"
+                  role="tabpanel"
+                >
+                  <div className="mb-2">
+                    <span className="fs-2hx fw-bold d-block text-gray-800 me-2 mb-2 lh-1 ls-n2">
+                      1,349
+                    </span>
+
+                    <span className="fs-6 fw-semibold text-gray-500">
+                      Avarage cost per iteraction
+                    </span>
                   </div>
+
+                  <div
+                    id="kt_charts_widget_11_chart_1"
+                    className="ms-n5 me-n3 min-h-auto w-100"
+                    style={{ height: "300px" }}
+                  ></div>
+                </div>
+
+                <div
+                  className="tab-pane fade"
+                  id="kt_chart_widget_11_tab_content_2"
+                  role="tabpanel"
+                >
+                  <div className="mb-2">
+                    <span className="fs-2hx fw-bold d-block text-gray-800 me-2 mb-2 lh-1 ls-n2">
+                      3,492
+                    </span>
+
+                    <span className="fs-6 fw-semibold text-gray-500">
+                      Avarage cost per iteraction
+                    </span>
+                  </div>
+
+                  <div
+                    id="kt_charts_widget_11_chart_2"
+                    className="ms-n5 me-n3 min-h-auto"
+                    style={{ height: "300px" }}
+                  ></div>
+                </div>
+
+                <div
+                  className="tab-pane fade active show"
+                  id="kt_chart_widget_11_tab_content_3"
+                  role="tabpanel"
+                >
+                  <div className="mb-2">
+                    <span className="fs-2hx fw-bold d-block text-gray-800 me-2 mb-2 lh-1 ls-n2">
+                      4,796
+                    </span>
+
+                    <span className="fs-6 fw-semibold text-gray-500">
+                      Deliveries in 30 Days
+                    </span>
+                  </div>
+
+                  <div
+                    id="kt_charts_widget_11_chart_3"
+                    className="ms-n5 me-n3 min-h-auto"
+                    style={{ height: "300px" }}
+                  ></div>
                 </div>
               </div>
             </div>

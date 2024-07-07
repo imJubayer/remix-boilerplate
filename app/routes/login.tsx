@@ -4,8 +4,14 @@ import type {
   MetaFunction,
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
-import { useEffect, useRef } from "react";
+import {
+  Form,
+  Link,
+  useActionData,
+  useSearchParams,
+  useNavigation,
+} from "@remix-run/react";
+import { useEffect, useRef, useState } from "react";
 
 import { verifyLogin } from "~/models/user.server";
 import { signInSchema } from "~/schema/authentication";
@@ -65,6 +71,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export const meta: MetaFunction = () => [{ title: "Login" }];
 
 export default function LoginPage() {
+  const transition = useNavigation();
+  const isSubmitting = transition.state === "submitting";
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/dashboard";
   const actionData = useActionData<typeof action>();
@@ -90,8 +98,9 @@ export default function LoginPage() {
       <div className="d-flex flex-column flex-column-fluid flex-lg-row">
         <div className="d-flex flex-center w-lg-50 pt-15 pt-lg-0 px-10">
           <div className="d-flex flex-center flex-lg-start flex-column">
-            <a href="index.html" className="mb-7">
-              <img alt="Logo" src="assets/media/logos/custom-3.svg" />
+            <a href="#" className="mb-7">
+              <h1 className="text-white">AllinOne</h1>
+              {/* <img alt="Logo" src="assets/media/logos/custom-3.svg" /> */}
             </a>
 
             <h2 className="text-white fw-normal m-0">
@@ -107,12 +116,12 @@ export default function LoginPage() {
                 <div className="text-center mb-11">
                   <h1 className="text-gray-900 fw-bolder mb-3">Sign In</h1>
 
-                  <div className="text-gray-500 fw-semibold fs-6">
+                  {/* <div className="text-gray-500 fw-semibold fs-6">
                     Your Social Campaigns
-                  </div>
+                  </div> */}
                 </div>
 
-                <div className="row g-3 mb-9">
+                {/* <div className="row g-3 mb-9">
                   <div className="col-md-6">
                     <a
                       href="#"
@@ -151,7 +160,7 @@ export default function LoginPage() {
                   <span className="w-125px text-gray-500 fw-semibold fs-7">
                     Or with email
                   </span>
-                </div>
+                </div> */}
 
                 <div className="fv-row mb-8">
                   <input
@@ -161,6 +170,7 @@ export default function LoginPage() {
                     autoComplete="off"
                     className={`form-control bg-transparent ${actionData?.errors?.email ? "is-invalid" : ""}`}
                     autoFocus={true}
+                    defaultValue="super@admin.com"
                   />
                   {actionData?.errors?.email ? (
                     <div className="text-danger" id="email-error">
@@ -170,7 +180,10 @@ export default function LoginPage() {
                 </div>
 
                 <div className="fv-row mb-3">
-                  <PasswordInput error={actionData?.errors.password} />
+                  <PasswordInput
+                    error={actionData?.errors.password}
+                    value="password"
+                  />
                 </div>
 
                 <div className="d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8">
@@ -186,16 +199,22 @@ export default function LoginPage() {
 
                 <div className="d-grid mb-10">
                   <button
+                    disabled={isSubmitting}
                     type="submit"
                     id="kt_sign_in_submit"
                     className="btn btn-primary"
                   >
-                    <span className="indicator-label">Sign In</span>
+                    <span className="indicator-label">
+                      Sign In{" "}
+                      {isSubmitting && (
+                        <span className="spinner-border spinner-border-sm align-middle ms-2"></span>
+                      )}
+                    </span>
 
-                    <span className="indicator-progress">
+                    {/* <span className="indicator-progress">
                       Please wait...
                       <span className="spinner-border spinner-border-sm align-middle ms-2"></span>
-                    </span>
+                    </span> */}
                   </button>
                 </div>
 

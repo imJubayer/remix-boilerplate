@@ -9,7 +9,7 @@ const Footer = () => {
             target="_blank"
             className="text-gray-800 text-hover-primary"
           >
-            Keenthemes
+            AllinOne
           </a>
         </div>
 

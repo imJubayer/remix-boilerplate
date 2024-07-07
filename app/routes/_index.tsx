@@ -4,7 +4,7 @@ import { Link, redirect } from "@remix-run/react";
 import { useOptionalUser } from "~/utils";
 
 export let loader: LoaderFunction = async () => {
-  return redirect("/dashboard");
+  return redirect("/login");
 };
 
 export const meta: MetaFunction = () => [{ title: "Remix Notes" }];
@@ -87,11 +87,6 @@ export default function Index() {
                 src: "https://user-images.githubusercontent.com/1500684/157764484-ad64a21a-d7fb-47e3-8669-ec046da20c1f.svg",
                 alt: "Prisma",
                 href: "https://prisma.io",
-              },
-              {
-                src: "https://user-images.githubusercontent.com/1500684/157764276-a516a239-e377-4a20-b44a-0ac7b65c8c14.svg",
-                alt: "Tailwind",
-                href: "https://tailwindcss.com",
               },
               {
                 src: "https://user-images.githubusercontent.com/1500684/157764454-48ac8c71-a2a9-4b5e-b19c-edef8b8953d6.svg",

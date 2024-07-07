@@ -1,48 +1,27 @@
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import { faker } from "@faker-js/faker";
+import { seedPermissions } from "./permissionSeeder";
+import { seedRoles } from "./roleSeeder";
+import { seedUsers } from "./userSeeder";
 
 const prisma = new PrismaClient();
 
 async function seed() {
-  const email = "rachel@remix.run";
-  const first_name = "admin";
-  const last_name = "user";
+  await seedPermissions();
+  await seedRoles();
+  await seedUsers();
 
-  // cleanup the existing database
-  await prisma.user.delete({ where: { email } }).catch(() => {
-    // no worries if it doesn't exist yet
-  });
+  console.info(`🎭 User roles and permissions has been successfully created.`);
 
-  const hashedPassword = await bcrypt.hash("racheliscool", 10);
-
-  const user = await prisma.user.create({
-    data: {
-      email,
-      first_name,
-      last_name,
-      password: {
-        create: {
-          hash: hashedPassword,
-        },
+  for (let i = 0; i < 15; i++) {
+    await prisma.category.create({
+      data: {
+        name: faker.commerce.department(),
+        description: faker.lorem.sentence(),
+        status: faker.helpers.arrayElement(["active", "inactive"]),
       },
-    },
-  });
-
-  await prisma.note.create({
-    data: {
-      title: "My first note",
-      body: "Hello, world!",
-      userId: user.id,
-    },
-  });
-
-  await prisma.note.create({
-    data: {
-      title: "My second note",
-      body: "Hello, world!",
-      userId: user.id,
-    },
-  });
+    });
+  }
 
   console.log(`Database has been seeded. 🌱`);
 }

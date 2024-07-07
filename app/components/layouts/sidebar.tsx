@@ -1,9 +1,16 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGift, faHome } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBank,
+  faCopy,
+  faGift,
+  faHome,
+  faUsers,
+} from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import { json } from "@remix-run/node";
 import { Form, Link, useLocation } from "@remix-run/react";
-import { useUser } from "~/utils";
+import { useUser, hasRole } from "~/utils";
+import { IUser } from "~/types/authentication";
 
 export const loader = async ({ request }: any) => {
   const url = new URL(request.url);
@@ -13,7 +20,7 @@ export const loader = async ({ request }: any) => {
 };
 
 const Sidebar = () => {
-  const user = useUser();
+  const user: IUser = useUser();
   const location = useLocation();
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [showHeader, setShowHeader] = useState(false);
@@ -63,12 +70,12 @@ const Sidebar = () => {
                 />
               </div>
 
-              <a
-                href="#"
+              <Link
                 className="text-white text-hover-primary fs-4 fw-bold ms-3"
+                to="/profile"
               >
-                Eugenia
-              </a>
+                {user.profile?.first_name}
+              </Link>
             </div>
 
             {showHeader && (
@@ -85,7 +92,7 @@ const Sidebar = () => {
 
                     <div className="d-flex flex-column">
                       <div className="fw-bold d-flex align-items-center fs-5">
-                        Eugenia
+                        {user.profile?.first_name}
                         <span className="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">
                           Pro
                         </span>
@@ -103,227 +110,14 @@ const Sidebar = () => {
                 <div className="separator my-2"></div>
 
                 <div className="menu-item px-5">
-                  <a href="account/overview.html" className="menu-link px-5">
+                  <Link className="menu-link px-5" to="/profile">
                     My Profile
-                  </a>
+                  </Link>
                 </div>
 
                 <div className="separator my-2"></div>
 
-                {/* <div
-                className="menu-item px-5"
-                data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
-                data-kt-menu-placement="left-start"
-                data-kt-menu-offset="-15px, 0"
-              >
-                <a href="#" className="menu-link px-5">
-                  <span className="menu-title position-relative">
-                    Mode
-                    <span className="ms-5 position-absolute translate-middle-y top-50 end-0">
-                      <i className="ki-duotone ki-night-day theme-light-show fs-2">
-                        <span className="path1"></span>
-                        <span className="path2"></span>
-                        <span className="path3"></span>
-                        <span className="path4"></span>
-                        <span className="path5"></span>
-                        <span className="path6"></span>
-                        <span className="path7"></span>
-                        <span className="path8"></span>
-                        <span className="path9"></span>
-                        <span className="path10"></span>
-                      </i>
-                      <i className="ki-duotone ki-moon theme-dark-show fs-2">
-                        <span className="path1"></span>
-                        <span className="path2"></span>
-                      </i>
-                    </span>
-                  </span>
-                </a>
-
-                <div
-                  className="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-title-gray-700 menu-icon-gray-500 menu-active-bg menu-state-color fw-semibold py-4 fs-base w-150px"
-                  data-kt-menu="true"
-                  data-kt-element="theme-mode-menu"
-                >
-                  <div className="menu-item px-3 my-0">
-                    <a
-                      href="#"
-                      className="menu-link px-3 py-2"
-                      data-kt-element="mode"
-                      data-kt-value="light"
-                    >
-                      <span className="menu-icon" data-kt-element="icon">
-                        <i className="ki-duotone ki-night-day fs-2">
-                          <span className="path1"></span>
-                          <span className="path2"></span>
-                          <span className="path3"></span>
-                          <span className="path4"></span>
-                          <span className="path5"></span>
-                          <span className="path6"></span>
-                          <span className="path7"></span>
-                          <span className="path8"></span>
-                          <span className="path9"></span>
-                          <span className="path10"></span>
-                        </i>
-                      </span>
-                      <span className="menu-title">Light</span>
-                    </a>
-                  </div>
-
-                  <div className="menu-item px-3 my-0">
-                    <a
-                      href="#"
-                      className="menu-link px-3 py-2"
-                      data-kt-element="mode"
-                      data-kt-value="dark"
-                    >
-                      <span className="menu-icon" data-kt-element="icon">
-                        <i className="ki-duotone ki-moon fs-2">
-                          <span className="path1"></span>
-                          <span className="path2"></span>
-                        </i>
-                      </span>
-                      <span className="menu-title">Dark</span>
-                    </a>
-                  </div>
-
-                  <div className="menu-item px-3 my-0">
-                    <a
-                      href="#"
-                      className="menu-link px-3 py-2"
-                      data-kt-element="mode"
-                      data-kt-value="system"
-                    >
-                      <span className="menu-icon" data-kt-element="icon">
-                        <i className="ki-duotone ki-screen fs-2">
-                          <span className="path1"></span>
-                          <span className="path2"></span>
-                          <span className="path3"></span>
-                          <span className="path4"></span>
-                        </i>
-                      </span>
-                      <span className="menu-title">System</span>
-                    </a>
-                  </div>
-                </div>
-              </div> */}
-
-                {/* <div
-                className="menu-item px-5"
-                data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
-                data-kt-menu-placement="right-end"
-                data-kt-menu-offset="-15px, 0"
-              >
-                <a href="#" className="menu-link px-5">
-                  <span className="menu-title position-relative">
-                    Language
-                    <span className="fs-8 rounded bg-light px-3 py-2 position-absolute translate-middle-y top-50 end-0">
-                      English
-                      <img
-                        className="w-15px h-15px rounded-1 ms-2"
-                        src="assets/media/flags/united-states.svg"
-                        alt=""
-                      />
-                    </span>
-                  </span>
-                </a>
-
-                <div className="menu-sub menu-sub-dropdown w-175px py-4">
-                  <div className="menu-item px-3">
-                    <a
-                      href="account/settings.html"
-                      className="menu-link d-flex px-5 active"
-                    >
-                      <span className="symbol symbol-20px me-4">
-                        <img
-                          className="rounded-1"
-                          src="assets/media/flags/united-states.svg"
-                          alt=""
-                        />
-                      </span>
-                      English
-                    </a>
-                  </div>
-
-                  <div className="menu-item px-3">
-                    <a
-                      href="account/settings.html"
-                      className="menu-link d-flex px-5"
-                    >
-                      <span className="symbol symbol-20px me-4">
-                        <img
-                          className="rounded-1"
-                          src="assets/media/flags/spain.svg"
-                          alt=""
-                        />
-                      </span>
-                      Spanish
-                    </a>
-                  </div>
-
-                  <div className="menu-item px-3">
-                    <a
-                      href="account/settings.html"
-                      className="menu-link d-flex px-5"
-                    >
-                      <span className="symbol symbol-20px me-4">
-                        <img
-                          className="rounded-1"
-                          src="assets/media/flags/germany.svg"
-                          alt=""
-                        />
-                      </span>
-                      German
-                    </a>
-                  </div>
-
-                  <div className="menu-item px-3">
-                    <a
-                      href="account/settings.html"
-                      className="menu-link d-flex px-5"
-                    >
-                      <span className="symbol symbol-20px me-4">
-                        <img
-                          className="rounded-1"
-                          src="assets/media/flags/japan.svg"
-                          alt=""
-                        />
-                      </span>
-                      Japanese
-                    </a>
-                  </div>
-
-                  <div className="menu-item px-3">
-                    <a
-                      href="account/settings.html"
-                      className="menu-link d-flex px-5"
-                    >
-                      <span className="symbol symbol-20px me-4">
-                        <img
-                          className="rounded-1"
-                          src="assets/media/flags/france.svg"
-                          alt=""
-                        />
-                      </span>
-                      French
-                    </a>
-                  </div>
-                </div>
-              </div> */}
-
-                {/* <div className="menu-item px-5 my-1">
-                <a href="account/settings.html" className="menu-link px-5">
-                  Account Settings
-                </a>
-              </div> */}
-
                 <div className="menu-item px-5">
-                  {/* <a
-                  href="authentication/layouts/corporate/sign-in.html"
-                  className="menu-link px-5"
-                >
-                  Sign Out
-                </a> */}
                   <Form action="/logout" method="post">
                     <button type="submit" className="menu-link px-5">
                       Logout
@@ -378,252 +172,128 @@ const Sidebar = () => {
                 <span className="menu-title">Dashboard</span>
               </Link>
             </div>
-
-            <div
-              data-kt-menu-trigger="click"
-              className={`menu-item menu-accordion ${activeMenu === "dashboard" ? "here show" : ""}`}
-              onClick={() => handleMenuClick("dashboard")}
-            >
-              <span className="menu-link">
+            <div className="menu-item">
+              <Link
+                className={`menu-link ${location.pathname === "/categories" ? "here active" : ""}`}
+                to="/categories"
+              >
                 <span className="menu-icon">
-                  <FontAwesomeIcon icon={faHome} className="fs-2" />
+                  <FontAwesomeIcon
+                    icon={faCopy}
+                    className="fs-2"
+                    style={{
+                      color: location.pathname === "/categories" ? "white" : "",
+                    }}
+                  />
                 </span>
-                <span className="menu-title">Dashboards</span>
-                <span className="menu-arrow"></span>
-              </span>
-
-              <div className="menu-sub menu-sub-accordion">
-                <div className="menu-item">
-                  <a className="menu-link active" href="index.html">
-                    <span className="menu-bullet">
-                      <span className="bullet bullet-dot"></span>
-                    </span>
-                    <span className="menu-title">Default</span>
-                  </a>
-                </div>
-              </div>
+                <span className="menu-title">Cateogry Management</span>
+              </Link>
             </div>
 
-            <div
-              data-kt-menu-trigger="click"
-              className={`menu-item menu-accordion ${activeMenu === "pages" ? "show" : ""}`}
-              onClick={() => handleMenuClick("pages")}
-            >
-              <span className="menu-link">
-                <span className="menu-icon">
-                  <FontAwesomeIcon icon={faGift} className="fs-2" />
-                </span>
-                <span className="menu-title">Pages</span>
-                <span className="menu-arrow"></span>
-              </span>
-
-              <div className="menu-sub menu-sub-accordion">
+            {hasRole(user, ["superadmin", "admin", "user"]) && (
+              <>
+                <div className="menu-item pt-5">
+                  <div className="menu-content">
+                    <span className="menu-heading fw-bold text-uppercase fs-7">
+                      User Management
+                    </span>
+                  </div>
+                </div>
                 <div
                   data-kt-menu-trigger="click"
-                  className="menu-item menu-accordion"
+                  className={`menu-item menu-accordion ${activeMenu === "users" || location.pathname === "/users/add" || location.pathname === "/users" ? "here show" : ""}`}
+                  onClick={() => handleMenuClick("users")}
                 >
                   <span className="menu-link">
-                    <span className="menu-bullet">
-                      <span className="bullet bullet-dot"></span>
+                    <span className="menu-icon">
+                      <FontAwesomeIcon icon={faUsers} />
                     </span>
-                    <span className="menu-title">User Profile</span>
+                    <span className="menu-title">Users</span>
                     <span className="menu-arrow"></span>
                   </span>
 
-                  <div className="menu-sub menu-sub-accordion">
+                  <div className="menu-sub menu-sub-accordion menu-active-bg">
                     <div className="menu-item">
-                      <a
-                        className="menu-link"
-                        href="pages/user-profile/overview.html"
+                      <Link
+                        className={`menu-link ${location.pathname === "/users" ? "here active" : ""}`}
+                        to="/users"
                       >
                         <span className="menu-bullet">
                           <span className="bullet bullet-dot"></span>
                         </span>
-                        <span className="menu-title">Overview</span>
-                      </a>
+                        <span className="menu-title">Users List</span>
+                      </Link>
                     </div>
 
                     <div className="menu-item">
-                      <a
-                        className="menu-link"
-                        href="pages/user-profile/projects.html"
+                      <Link
+                        className={`menu-link ${location.pathname === "/users/add" ? "here active" : ""}`}
+                        to="/users/add"
                       >
                         <span className="menu-bullet">
                           <span className="bullet bullet-dot"></span>
                         </span>
-                        <span className="menu-title">Projects</span>
-                      </a>
-                    </div>
-
-                    <div className="menu-item">
-                      <a
-                        className="menu-link"
-                        href="pages/user-profile/campaigns.html"
-                      >
-                        <span className="menu-bullet">
-                          <span className="bullet bullet-dot"></span>
-                        </span>
-                        <span className="menu-title">Campaigns</span>
-                      </a>
-                    </div>
-
-                    <div className="menu-item">
-                      <a
-                        className="menu-link"
-                        href="pages/user-profile/documents.html"
-                      >
-                        <span className="menu-bullet">
-                          <span className="bullet bullet-dot"></span>
-                        </span>
-                        <span className="menu-title">Documents</span>
-                      </a>
-                    </div>
-
-                    <div className="menu-item">
-                      <a
-                        className="menu-link"
-                        href="pages/user-profile/followers.html"
-                      >
-                        <span className="menu-bullet">
-                          <span className="bullet bullet-dot"></span>
-                        </span>
-                        <span className="menu-title">Followers</span>
-                      </a>
-                    </div>
-
-                    <div className="menu-item">
-                      <a
-                        className="menu-link"
-                        href="pages/user-profile/activity.html"
-                      >
-                        <span className="menu-bullet">
-                          <span className="bullet bullet-dot"></span>
-                        </span>
-                        <span className="menu-title">Activity</span>
-                      </a>
+                        <span className="menu-title">Add User</span>
+                      </Link>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              </>
+            )}
+
+            {hasRole(user, ["superadmin", "admin"]) && (
+              <>
+                <div className="menu-item pt-5">
+                  <div className="menu-content">
+                    <span className="menu-heading fw-bold text-uppercase fs-7">
+                      Access & Controls
+                    </span>
+                  </div>
+                </div>
+                <div
+                  data-kt-menu-trigger="click"
+                  className={`menu-item menu-accordion ${activeMenu === "rbac" || location.pathname === "/roles" || location.pathname === "/roles/add" || location.pathname === "/permissions" || location.pathname === "/permissions/sync" ? "here show" : ""}`}
+                  onClick={() => handleMenuClick("rbac")}
+                >
+                  <span className="menu-link">
+                    <span className="menu-icon">
+                      <FontAwesomeIcon icon={faBank} />
+                    </span>
+                    <span className="menu-title">Roles & Permissions</span>
+                    <span className="menu-arrow"></span>
+                  </span>
+
+                  <div className="menu-sub menu-sub-accordion menu-active-bg">
+                    <div className="menu-item">
+                      <Link
+                        className={`menu-link ${location.pathname === "/roles" || location.pathname === "/roles/add" ? "here active" : ""}`}
+                        to="/roles"
+                      >
+                        <span className="menu-bullet">
+                          <span className="bullet bullet-dot"></span>
+                        </span>
+                        <span className="menu-title">Roles</span>
+                      </Link>
+                    </div>
+
+                    <div className="menu-item">
+                      <Link
+                        className={`menu-link ${location.pathname === "/permissions" || location.pathname === "/permissions/sync" ? "here active" : ""}`}
+                        to="/permissions"
+                      >
+                        <span className="menu-bullet">
+                          <span className="bullet bullet-dot"></span>
+                        </span>
+                        <span className="menu-title">Permissions</span>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
           <div className="separator mx-8"></div>
-
-          <div className="menu menu-rounded menu-column px-4">
-            <div className="menu-item">
-              <div className="menu-content menu-heading text-uppercase fs-7">
-                Projects
-              </div>
-            </div>
-
-            <div className="menu-item">
-              <a className="menu-link" href="apps/projects/project.html">
-                <span className="menu-icon">
-                  <span className="bullet bullet-dot h-10px w-10px bg-primary"></span>
-                </span>
-
-                <span className="menu-title">Google Ads</span>
-
-                <span className="menu-badge">
-                  <span className="badge badge-custom">6</span>
-                </span>
-              </a>
-            </div>
-
-            <div className="menu-item">
-              <a className="menu-link" href="apps/projects/targets.html">
-                <span className="menu-icon">
-                  <span className="bullet bullet-dot h-10px w-10px bg-success"></span>
-                </span>
-
-                <span className="menu-title">AirStoke App</span>
-
-                <span className="menu-badge">
-                  <span className="badge badge-custom">2</span>
-                </span>
-              </a>
-            </div>
-
-            <div className="menu-item">
-              <a className="menu-link" href="apps/projects/budget.html">
-                <span className="menu-icon">
-                  <span className="bullet bullet-dot h-10px w-10px bg-warning"></span>
-                </span>
-
-                <span className="menu-title">Internal Tasks</span>
-
-                <span className="menu-badge">
-                  <span className="badge badge-custom">37</span>
-                </span>
-              </a>
-            </div>
-
-            <div
-              className="menu-inner flex-column collapse"
-              id="kt_app_sidebar_menu_projects_collapse"
-            >
-              <div className="menu-item">
-                <a className="menu-link" href="apps/projects/users.html">
-                  <span className="menu-icon">
-                    <span className="bullet bullet-dot h-10px w-10px bg-danger"></span>
-                  </span>
-
-                  <span className="menu-title">Fitnes App</span>
-
-                  <span className="menu-badge">
-                    <span className="badge badge-custom">3</span>
-                  </span>
-                </a>
-              </div>
-
-              <div className="menu-item">
-                <a className="menu-link" href="apps/projects/files.html">
-                  <span className="menu-icon">
-                    <span className="bullet bullet-dot h-10px w-10px bg-info"></span>
-                  </span>
-
-                  <span className="menu-title">Oppo CRM</span>
-
-                  <span className="menu-badge">
-                    <span className="badge badge-custom">12</span>
-                  </span>
-                </a>
-              </div>
-
-              <div className="menu-item">
-                <a className="menu-link" href="apps/projects/activity.html">
-                  <span className="menu-icon">
-                    <span className="bullet bullet-dot h-10px w-10px bg-warning"></span>
-                  </span>
-
-                  <span className="menu-title">Finance Dispatch</span>
-
-                  <span className="menu-badge">
-                    <span className="badge badge-custom">25</span>
-                  </span>
-                </a>
-              </div>
-            </div>
-
-            <div className="menu-item">
-              <a
-                className="menu-link menu-collapse-toggle toggle collapsible collapsed"
-                data-bs-toggle="collapse"
-                href="#kt_app_sidebar_menu_projects_collapse"
-                data-kt-toggle-text="Show less"
-              >
-                <span className="menu-icon">
-                  <i className="ki-duotone ki-down toggle-off fs-2 me-0"></i>
-                  <i className="ki-duotone ki-up toggle-on fs-2 me-0"></i>
-                </span>
-
-                <span className="menu-title" data-kt-toggle-text-target="true">
-                  Show more
-                </span>
-              </a>
-            </div>
-          </div>
         </div>
       </div>
     </div>

@@ -4,9 +4,10 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 interface PasswordInputProps {
   error?: string;
+  value?: string;
 }
 
-const PasswordInput: FC<PasswordInputProps> = ({ error }) => {
+const PasswordInput: FC<PasswordInputProps> = ({ error, value }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const passwordRef = useRef<HTMLInputElement>(null);
 
@@ -26,6 +27,7 @@ const PasswordInput: FC<PasswordInputProps> = ({ error }) => {
         aria-invalid={error ? true : undefined}
         aria-describedby="password-error"
         className={`form-control bg-transparent ${error ? "is-invalid" : ""}`}
+        defaultValue={value && value}
       />
       <span
         className="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2"

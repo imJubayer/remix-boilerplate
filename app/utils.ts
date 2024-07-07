@@ -1,7 +1,14 @@
-import { useMatches } from "@remix-run/react";
+import { json, useMatches } from "@remix-run/react";
 import { useMemo } from "react";
+import toast from "react-hot-toast";
 
-import type { User } from "~/models/user.server";
+import { getUserById, type User } from "~/models/user.server";
+// import { User as UserType } from "./types/authentication";
+// import { RoleName } from "./types/rbac";
+// import { request } from "http";
+// import { requireUser, requireUserId } from "./session.server";
+import { Permission, Role } from "@prisma/client";
+import { IUser } from "./types/authentication";
 
 const DEFAULT_REDIRECT = "/";
 
@@ -44,7 +51,7 @@ export function useMatchesData(
   return route?.data as Record<string, unknown>;
 }
 
-function isUser(user: unknown): user is User {
+function isUser(user: unknown): user is IUser {
   return (
     user != null &&
     typeof user === "object" &&
@@ -53,7 +60,7 @@ function isUser(user: unknown): user is User {
   );
 }
 
-export function useOptionalUser(): User | undefined {
+export function useOptionalUser(): IUser | undefined {
   const data = useMatchesData("root");
   if (!data || !isUser(data.user)) {
     return undefined;
@@ -61,7 +68,7 @@ export function useOptionalUser(): User | undefined {
   return data.user;
 }
 
-export function useUser(): User {
+export function useUser(): IUser {
   const maybeUser = useOptionalUser();
   if (!maybeUser) {
     throw new Error(
@@ -71,6 +78,70 @@ export function useUser(): User {
   return maybeUser;
 }
 
+export function hasRole(user: IUser | null, requiredRoles: string[]): boolean {
+  if (!user || !user.role) {
+    return false; // If user is null or user has no role, return false
+  }
+  return requiredRoles.includes(user.role!.name);
+}
+
+// export async function requireRoles(
+//   request: Request,
+//   requiredRoles: string[],
+// ): Promise<boolean> {
+//   try {
+//     const user = await requireUser(request);
+//     // Check if the user has at least one of the required roles
+//     if (!requiredRoles.some((role) => hasRole(user, role))) {
+//       abort(403);
+//     }
+//     return true; // Return true if user has required roles
+//   } catch (error) {
+//     // Handle errors from requireUser, such as logout
+//     throw error;
+//   }
+// }
+
+export function abort(
+  status: number,
+  message: string = "Permission denied",
+): never {
+  throw json(
+    {
+      error: "Forbidden",
+      message,
+    },
+    { status },
+  );
+}
+
+export function hasPermission(
+  user: IUser | null,
+  permissions: string[],
+): boolean {
+  try {
+    if (!user) {
+      return false; // User not authenticated or not found
+    }
+
+    // Check if any of the user's roles have the required permissions
+    const hasPermission = user.role?.permissions.some(
+      (permission: Permission) => permissions.includes(permission.action),
+    );
+    return hasPermission;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export function validateEmail(email: unknown): email is string {
   return typeof email === "string" && email.length > 3 && email.includes("@");
 }
+
+export const handleSuccessToast = (msg: string) => {
+  toast.success(msg);
+};
+
+export const handleErrorToast = (msg: string) => {
+  toast.error(msg);
+};
