@@ -1,0 +1,44 @@
+.free_listing_section {
+  padding: 36px 0;
+  background-color: #f0f1f7;
+}
+.free_listing_section .listing_box {
+  padding: 48px;
+  background-color: #ffffff;
+  border-radius: 20px;
+}
+.free_listing_section .listing_box .text_box {
+  padding: 48px;
+  background-color: #4b4e67;
+  border-radius: 20px;
+}
+.free_listing_section .listing_box .text_box .pera {
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 125%;
+  margin-bottom: 40px;
+}
+.free_listing_section .listing_box .text_box .btn {
+  color: #4b4e67;
+  text-align: center;
+  font-family: "Google Sans";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 22px;
+  padding: 12px 32px;
+  border-radius: 8px;
+  background-color: #ffffff;
+}
+
+@media only screen and (max-width: 768px) {
+  .free_listing_section .listing_box {
+    padding: 18px;
+  }
+  .free_listing_section .listing_box .text_box {
+    padding: 20px;
+  }
+}

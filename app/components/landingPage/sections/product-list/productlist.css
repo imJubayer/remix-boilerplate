@@ -1,0 +1,63 @@
+.product_list_section {
+  padding: 50px 0;
+}
+.product_list_section .filter_content {
+  position: relative;
+  margin-bottom: 20px;
+}
+.product_list_section .filter_content .filter_title_box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 17px 24px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ececec;
+}
+.product_list_section .filter_content .filter_title_box .title {
+  color: #3c4242;
+  font-family: "Google Sans";
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: 0.48px;
+  margin: 0;
+}
+.product_list_section .filter_content .filter_title_box .icon_box {
+  height: 30px;
+  width: 30px;
+}
+.product_list_section .filter_content .filter_title_box .icon_box svg {
+  height: 100%;
+  width: 100%;
+}
+
+.product_list_section .filter_content .content_box .category_list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  transition: all 250ms;
+}
+
+.product_list_section .filter_content .content_box .category_list li,
+.product_list_section .filter_content .content_box .category_list li * {
+  cursor: pointer;
+}
+
+.product_list_section .filter_content .content_box .category_list li .text {
+  color: #7f7f7f;
+  font-family: "Google Sans";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  margin: 0;
+}
+
+.product_list_section .product_list_content .products {
+  padding: 24px 0;
+}
+.product_list_section .product_list_content .products .product_card {
+  margin-bottom: 24px;
+}

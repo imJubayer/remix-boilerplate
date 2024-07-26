@@ -1,0 +1,115 @@
+.options_section {
+  padding: 120px 0;
+}
+.options_section .heading {
+  color: #222;
+  font-family: "Inter", sans-serif;
+  font-size: 44px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 52px;
+}
+.options_section .count_list {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  row-gap: 20px;
+}
+.options_section .count_list li {
+  padding-left: 12px;
+  border-left: 4px solid #ddd;
+  width: calc(50% - 10px);
+}
+.options_section .count_list li .title {
+  color: #4b4e67;
+  font-family: "Inter", sans-serif;
+  font-size: 36px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 44px;
+  letter-spacing: -0.73px;
+}
+.options_section .count_list li .subtitle {
+  color: #4b4e67;
+  font-family: "Inter", sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 26px;
+}
+.options_section .option_slider {
+  margin-top: 110px;
+  position: relative;
+}
+.options_section .option_slider .slick-arrow {
+  padding: 10px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e5e5e5;
+  background: #fff;
+  box-shadow: 0px 2px 6px 2px rgba(0, 0, 0, 0.12);
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.options_section .option_slider .swiper-button-next.swiper-button-disabled,
+.options_section .option_slider .swiper-button-prev.swiper-button-disabled {
+  opacity: 0;
+}
+.options_section .option_slider .swiper-button-next svg,
+.options_section .option_slider .swiper-button-prev svg {
+  width: 100%;
+  height: 100%;
+  fill: #000;
+}
+.options_section .option_slider .slick-arrow::before {
+  color: #000;
+}
+.options_section .slide_content {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 35px;
+  padding-right: 35px;
+}
+.options_section .slide_content .option_card {
+  width: calc(50% - 17.5px);
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #eaeaea;
+  padding: 0px 20px;
+}
+.options_section .slide_content .option_card .head .imgbox {
+  width: 50px;
+}
+.options_section .slide_content .option_card .body .title {
+  color: #222;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+@media only screen and (max-width: 768px) {
+  .options_section .slide_content {
+    padding-right: 0px;
+  }
+  .options_section .slick-prev {
+    left: 0;
+  }
+  .options_section .slick-next {
+    right: 0;
+  }
+}

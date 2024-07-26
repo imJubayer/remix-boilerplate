@@ -4,10 +4,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Footer from "./footer";
 import Sidebar from "./sidebar";
 import { BreadCrumb } from "~/types/common";
-import { Link } from "@remix-run/react";
+import { Link, useLocation, useNavigate } from "@remix-run/react";
 import React, { useEffect } from "react";
 import { useUser } from "~/utils";
 import { MetaFunction } from "@remix-run/node";
+import { getMediaPath } from "~/utils/helper";
 interface DashboardLayoutProps {
   breadCrumb?: BreadCrumb[];
   tabs?: React.ReactNode;
@@ -28,9 +29,22 @@ const MainLayout = ({
   breadCrumb,
 }: DashboardLayoutProps) => {
   const user = useUser();
+  const location = useLocation();
+  const navigate = useNavigate();
+
   useEffect(() => {
     document.title = headerTitle ? `AllinOne | ${headerTitle}` : "AllinOne";
   }, [headerTitle]);
+
+  useEffect(() => {
+    if (
+      user.force_password_change &&
+      location.pathname !== "/change-password"
+    ) {
+      navigate("/change-password");
+    }
+  }, []);
+
   return (
     <div className="d-flex flex-column flex-root app-root" id="kt_app_root">
       <div className="app-page flex-column flex-column-fluid" id="kt_app_page">
@@ -60,18 +74,18 @@ const MainLayout = ({
                 </i>
               </div>
 
-              <a href="index.html">
+              <Link to="/dashboard">
                 <img
-                  alt="Logo"
-                  src="assets/media/logos/demo36.svg"
+                  alt="AllinOne"
+                  src={getMediaPath("/logos/logo.svg")}
                   className="h-30px theme-light-show"
                 />
                 <img
-                  alt="Logo"
-                  src="assets/media/logos/demo36.svg"
+                  alt="AllinOne"
+                  src={getMediaPath("/logos/logo.svg")}
                   className="h-30px theme-dark-show"
                 />
-              </a>
+              </Link>
             </div>
 
             <div
@@ -85,20 +99,23 @@ const MainLayout = ({
                 data-kt-swapper-parent="{default: '#kt_app_content_container', lg: '#kt_app_header_wrapper'}"
               >
                 <div className="d-flex align-items-center mb-3">
-                  <a href="index.html">
+                  <Link to="/dashboard">
                     <img
-                      alt="Logo"
-                      src="assets/media/logos/demo36.svg"
+                      alt="AllinOne"
+                      src={getMediaPath("/logos/logo.svg")}
                       className="me-7 d-none d-lg-inline h-25px"
                     />
-                  </a>
+                  </Link>
 
                   <ul className="breadcrumb breadcrumb-separatorless fw-semibold fs-7">
                     <li className="breadcrumb-item text-gray-700 fw-bold lh-1 mx-n1">
-                      <Link to="/dashboard" className="text-hover-primary">
+                      <Link
+                        to="/dashboard"
+                        className="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
+                      >
                         <FontAwesomeIcon
                           icon={faHome}
-                          className="fs-8 text-gray-700"
+                          className="fs-7 text-gray-700 text-hover-primary"
                         />
                       </Link>
                     </li>
@@ -142,7 +159,7 @@ const MainLayout = ({
         >
           <div
             id="kt_app_sidebar"
-            className="app-sidebar flex-column"
+            className="app-sidebar flex-column drawer drawer-start drawer-on"
             data-kt-drawer="true"
             data-kt-drawer-name="app-sidebar"
             data-kt-drawer-activate="{default: true, lg: false}"
@@ -151,7 +168,7 @@ const MainLayout = ({
             data-kt-drawer-direction="start"
             data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle"
           >
-            <div
+            {/* <div
               className="app-sidebar-header d-flex flex-column px-10 pt-8"
               id="kt_app_sidebar_header"
             >
@@ -164,7 +181,10 @@ const MainLayout = ({
                     data-kt-menu-placement="top-start"
                   >
                     <div className="d-flex flex-center cursor-pointer symbol symbol-custom symbol-40px">
-                      <img src="assets/media/avatars/300-2.jpg" alt="image" />
+                      <img
+                        src={getMediaPath("/avatars/300-2.jpg")}
+                        alt="image"
+                      />
                     </div>
 
                     <a
@@ -185,13 +205,13 @@ const MainLayout = ({
                         <div className="symbol symbol-50px me-5">
                           <img
                             alt="Logo"
-                            src="assets/media/avatars/300-2.jpg"
+                            src={getMediaPath("/avatars/300-2.jpg")}
                           />
                         </div>
 
                         <div className="d-flex flex-column">
                           <div className="fw-bold d-flex align-items-center fs-5">
-                            {user.profile.first_name}
+                            {user.profile?.first_name}
                             <span className="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">
                               Pro
                             </span>
@@ -439,7 +459,7 @@ const MainLayout = ({
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             <div
               className="app-sidebar-navs flex-column-fluid"
@@ -470,6 +490,7 @@ const MainLayout = ({
         <div id="toaster">
           <Toaster
             toastOptions={{
+              duration: 4000,
               position: "top-right",
               success: {
                 style: {

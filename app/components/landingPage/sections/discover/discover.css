@@ -1,0 +1,127 @@
+.discover_section {
+  padding: 80px 0;
+  background-color: #f0f1f7;
+}
+.discover_section .heading {
+  color: #222;
+  font-family: "Inter", sans-serif;
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 40px;
+  margin-bottom: 40px;
+}
+.discover_section .discover_card {
+  border-radius: 16px;
+  background: #fff;
+  padding: 20px;
+  height: 100%;
+}
+.discover_section .discover_card .head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  row-gap: 10px;
+  margin-bottom: 20px;
+}
+.discover_section .discover_card .head .left_box .title {
+  color: #222;
+  font-family: "Inter", sans-serif;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  margin-bottom: 12px;
+}
+.discover_section .discover_card .head .left_box .subtitle {
+  color: #222;
+  font-family: "Inter", sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+.discover_section .discover_card .head .right_box .view_more {
+  color: #333;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.discover_section .discover_card .head .right_box .view_more,
+.discover_section .discover_card .head .right_box .view_more * {
+  cursor: pointer;
+}
+.discover_section .discover_card .body_one {
+  display: flex;
+  gap: 20px;
+}
+.discover_section .discover_card .body_one .left_box {
+  width: calc(35% - 20px);
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.discover_section .discover_card .body_one .left_box .imgbox_full {
+  height: calc(33.3333333333% - 8px);
+  border-radius: 8px;
+}
+.discover_section .discover_card .body_one .right_box {
+  width: 65%;
+  position: relative;
+}
+.discover_section .discover_card .body_one .right_box .imgbox_full {
+  border-radius: 12px;
+}
+.discover_section .discover_card .body_one .right_box .badge {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  color: #333;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 32px;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0 8px;
+}
+.discover_section .discover_card .body_tow .left_box {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+}
+.discover_section .discover_card .body_tow .left_box .imgbox_full {
+  width: calc(50% - 8px);
+  aspect-ratio: 1/1;
+  border-radius: 12px;
+}
+.discover_section .discover_card .body_three .right_box {
+  position: relative;
+}
+.discover_section .discover_card .body_three .right_box .imgbox {
+  aspect-ratio: 1/1;
+  border-radius: 12px;
+}
+.discover_section .discover_card .body_three .right_box .badge {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  color: #333;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 32px;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0 8px;
+}

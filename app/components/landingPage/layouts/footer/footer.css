@@ -1,0 +1,160 @@
+.lp_footer {
+  padding: 64px 0;
+  background-color: #4b4e67;
+}
+.lp_footer .content_wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  row-gap: 30px;
+}
+.lp_footer .content_wrapper .footer_blocks {
+  width: calc(20% - 24px);
+  flex-shrink: 0;
+}
+.lp_footer .footer_title {
+  color: #fff;
+  font-family:  "Inter", sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 28px;
+  margin-bottom: 40px;
+}
+.lp_footer .footer_details .logo {
+  display: block;
+  width: 100%;
+  max-width: 250px;
+  margin-bottom: 40px;
+}
+.lp_footer .footer_details .texts {
+  color: #f5f7fa;
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+  margin-bottom: 40px;
+}
+.lp_footer .footer_details .social_icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  row-gap: 16px;
+}
+.lp_footer .footer_details .social_icons li svg {
+  height: 32px;
+  width: 32px;
+  fill: #fff;
+}
+.lp_footer .footer_menu .menu li{
+  margin-bottom: 10px;
+}
+.lp_footer .footer_menu .menu li a {
+  color: #f5f7fa;
+  font-family:  "Inter", sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+  margin-bottom: 12px;
+  transition: all 250ms;
+}
+.lp_footer .footer_menu .menu li a:hover {
+  color: #fff;
+}
+.lp_footer .footer_menu .menu li a,
+.lp_footer .footer_menu .menu li a * {
+  cursor: pointer;
+}
+.lp_footer .footer_contacts .contact_list li {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+.lp_footer .footer_contacts .contact_list li .icon_box {
+  height: 30px;
+  width: 30px;
+  padding: 5px;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lp_footer .footer_contacts .contact_list li .icon_box svg {
+  width: 100%;
+  height: 100%;
+}
+.lp_footer .footer_contacts .contact_list li .text_box,
+.lp_footer .footer_contacts .contact_list li .text_box * {
+  color: #fafafa;
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+}
+.lp_footer .footer_contacts .contact_list li .text_box a {
+  transition: all 250ms;
+}
+.lp_footer .footer_contacts .contact_list li .text_box a:hover {
+  color: #fff;
+}
+.lp_footer .footer_contacts .contact_list li .text_box a,
+.lp_footer .footer_contacts .contact_list li .text_box a * {
+  cursor: pointer;
+}
+.lp_footer .footer_email .email_form {
+  width: 100%;
+  max-width: 250px;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.3137254902);
+}
+.lp_footer .footer_email .email_form input {
+  padding: 10px 12px;
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+  width: 80%;
+}
+.lp_footer .footer_email .email_form input::-webkit-input-placeholder {
+  color: #d9dbe1;
+}
+.lp_footer .footer_email .email_form button {
+  height: 100%;
+  width: 20%;
+  background-color: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lp_footer .footer_email .email_form button,
+.lp_footer .footer_email .email_form button * {
+  cursor: pointer;
+}
+.lp_footer .footer_email .email_form button svg {
+  width: 30px;
+  height: 30px;
+}
+
+@media only screen and (max-width: 992px) {
+  .lp_footer .content_wrapper .footer_blocks {
+    width: calc(33.3333333333% - 20px);
+  }
+}
+@media only screen and (max-width: 768px) {
+  .lp_footer .content_wrapper .footer_blocks {
+    width: 100%;
+  }
+}

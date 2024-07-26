@@ -1,11 +1,11 @@
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  host: process.env.MAILTRAP_HOST,
-  port: Number(process.env.MAILTRAP_PORT),
+  host: process.env.MAIL_HOST,
+  port: Number(process.env.MAIL_PORT),
   auth: {
-    user: process.env.MAILTRAP_USER,
-    pass: process.env.MAILTRAP_PASS,
+    user: process.env.MAIL_USERNAME,
+    pass: process.env.MAIL_PASSWORD,
   },
 });
 
@@ -19,15 +19,15 @@ interface SendMailOptions {
 const sendMail = async ({
   to,
   subject,
-  text,
   html,
+  text = "",
 }: SendMailOptions): Promise<void> => {
   await transporter.sendMail({
     from: "allin@gmail.com",
     to,
     subject,
-    text,
     html,
+    text,
   });
 };
 

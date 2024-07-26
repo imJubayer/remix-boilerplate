@@ -7,7 +7,7 @@ import { abort, hasRole } from "~/utils";
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const requiredRoles = ["admin", "superadmin"];
   const user = await getUser(request);
-  if (!hasRole(user, requiredRoles)) {
+  if (user && !hasRole(user, requiredRoles)) {
     abort(403);
   }
   return 1;

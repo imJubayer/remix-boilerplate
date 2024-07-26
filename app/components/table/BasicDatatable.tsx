@@ -1,6 +1,3 @@
-import React, { useState, useEffect } from "react";
-import { Link, Form } from "@remix-run/react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   IconDefinition,
   faArrowDown,
@@ -9,11 +6,16 @@ import {
   faChevronRight,
   faMagnifyingGlass,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Link, useNavigate } from "@remix-run/react";
 import _ from "lodash";
+import React, { useCallback, useState } from "react";
+
 import { ColumnType } from "~/types/common";
 import { checkNullInfo, checkDecimal } from "~/utils/helper";
 
-type TableProps = {
+interface TableProps {
+  name?: string;
   searchable?: boolean;
   filter?: React.ReactNode;
   secondary?: React.ReactNode;
@@ -27,16 +29,17 @@ type TableProps = {
   linkID?: string;
   idField?: string;
   statusField?: string;
-  showSL?: boolean;
+  showSerial?: boolean;
   sortables?: string[];
+  serverSide?: boolean;
   setPage?: (value: number) => void;
   setRowsPerPage?: (value: number) => void;
   updateStatus?: (id: string) => void;
   updateRows?: (data: any[]) => void;
-  serverSide?: boolean;
-};
+}
 
 const BasicDataTable = ({
+  name,
   searchable,
   filter,
   secondary,
@@ -48,42 +51,64 @@ const BasicDataTable = ({
   rowsPerPage = 10,
   link = "",
   linkID,
-  showSL,
+  showSerial,
   sortables,
   idField,
   statusField,
-  setPage,
-  setRowsPerPage,
+  serverSide = true,
   updateStatus,
   updateRows,
-  serverSide = false,
 }: TableProps) => {
+  const navigate = useNavigate();
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
+  const [search, setSearch] = useState("");
 
-  const handleChangePage = (newPage: number) => {
-    if (setPage) {
-      setPage(newPage);
+  const handleNavigate = (page: number, limit: number, search?: string) => {
+    const searchParams = new URLSearchParams({
+      limit: limit.toString(),
+      page: page.toString(),
+    });
+    if (searchable && search) {
+      searchParams.set("search", search);
+    }
+    navigate({
+      pathname: location.pathname,
+      search: searchParams.toString(),
+    });
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
+    const rowsPerPageToSet = parseInt(event.target.value, 10);
+    handleNavigate(1, rowsPerPageToSet, search);
+  };
+
+  const debouncedSearch = useCallback(
+    _.debounce((value) => {
+      handleNavigate(1, rowsPerPage, value);
+    }, 300),
+    [rowsPerPage],
+  );
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(event.target.value);
+    debouncedSearch(event.target.value);
+  };
+
+  const getPaginationFrom = (): number => {
+    if (count) {
+      return ((page - 1) * rowsPerPage + 1) as number;
+    } else {
+      return 0;
     }
   };
 
-  const slicedRows = (rows: any) => {
-    if (!serverSide) {
-      return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-    }
-    return rows;
+  const getPaginationTo = (): number => {
+    return page * rowsPerPage > count
+      ? (count as number)
+      : ((page * rowsPerPage) as number);
   };
-
-  function labelDisplayedRows({
-    from,
-    to,
-    count,
-  }: {
-    from: number;
-    to: number;
-    count: number;
-  }) {
-    return `${from}–${to} of ${count !== -1 ? count : `more than ${to}`}`;
-  }
 
   const getLabelDisplayedRowsTo = () => {
     if (rows.length === -1) {
@@ -94,9 +119,19 @@ const BasicDataTable = ({
       : Math.min(count, (page + 1) * rowsPerPage);
   };
 
-  const handleChangeRowsPerPage = (event: any) => {
-    setRowsPerPage && setRowsPerPage(parseInt(event.target.value, 10));
-    setPage && setPage(0);
+  const getPaginationFromToString = (): string => {
+    if (serverSide) {
+      return `${getPaginationFrom()}-${getPaginationTo()} of ${count}`;
+    } else {
+      return `${page * rowsPerPage + 1}-${getLabelDisplayedRowsTo()} of ${count}`;
+    }
+  };
+
+  const slicedRows = (rows: any) => {
+    if (!serverSide) {
+      return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    }
+    return rows;
   };
 
   const renderCell = (item: any, column: any) => {
@@ -134,11 +169,13 @@ const BasicDataTable = ({
     }
     return null;
   };
+
   return (
     <div className="card card-flush">
       <div className="card-header mt-6">
         <div className="card-title">
-          {/* {searchable && (
+          {name ? <h3>{name}</h3> : null}
+          {searchable && (
             <div className="d-flex align-items-center position-relative my-1 me-5">
               <FontAwesomeIcon
                 icon={faMagnifyingGlass}
@@ -149,30 +186,26 @@ const BasicDataTable = ({
                 data-kt-permissions-table-filter="search"
                 className="form-control form-control-solid w-250px ps-13"
                 placeholder="Search"
+                onChange={handleSearch}
               />
             </div>
-          )} */}
-          {filter && filter}
+          )}
+          {filter ? filter : null}
         </div>
         <div className="card-toolbar">{secondary}</div>
       </div>
-      <div className="card-body py-4">
-        <table className="table align-middle table-row-dashed fs-6 gy-5 table-hover">
+      <div className="card-body">
+        <table className="table align-middle table-row-dashed">
           <thead>
-            <tr className="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
-              {showSL && (
-                <th style={{ textAlign: "center", width: "50px" }}>Sl</th>
-              )}
+            <tr className="text-start text-muted fw-bold fs-7 text-uppercase gs-0 text-gray-800 text-gray-800">
+              {showSerial ? <th style={{ width: "5%" }}>SL.</th> : null}
               {columns.map((column: ColumnType, index: number) =>
                 sortables?.length &&
                 column.accessor &&
                 sortables.includes(column.accessor) ? (
                   <th
-                    className="w-10px pe-2"
                     key={index}
                     style={{
-                      textAlign: "center",
-                      width: column.width || "auto",
                       cursor: "pointer",
                     }}
                     onClick={() => {
@@ -180,26 +213,19 @@ const BasicDataTable = ({
                     }}
                   >
                     {column.header}{" "}
-                    {getSortIcon(column.accessor) && (
+                    {getSortIcon(column.accessor) ? (
                       <FontAwesomeIcon
                         icon={getSortIcon(column.accessor) as IconDefinition}
                       />
-                    )}
+                    ) : null}
                   </th>
                 ) : (
-                  <th
-                    key={index}
-                    className="w-10px pe-2"
-                    style={{
-                      textAlign: "center",
-                      width: column.width || "auto",
-                    }}
-                  >
-                    {column.header}
-                  </th>
+                  <th key={index}>{column.header}</th>
                 ),
               )}
-              {statusField && idField && updateStatus && <th>Update Status</th>}
+              {statusField && idField && updateStatus ? (
+                <th>Update Status</th>
+              ) : null}
             </tr>
           </thead>
           <tbody className="text-gray-600 fw-semibold">
@@ -208,17 +234,18 @@ const BasicDataTable = ({
                 <tr
                   key={i}
                   style={{
-                    textAlign: "center",
-                    cursor: linkID ? "pointer" : "default",
+                    cursor: linkID ? "pointer" : "auto",
                   }}
                 >
-                  {showSL && (
+                  {showSerial ? (
                     <td>
-                      {rowsPerPage && page ? page * rowsPerPage + i + 1 : i + 1}
+                      {rowsPerPage && page
+                        ? (page - 1) * rowsPerPage + i + 1
+                        : i + 1}
                     </td>
-                  )}
+                  ) : null}
                   {columns.map((column: ColumnType, k: number) => (
-                    <td key={k}>
+                    <td key={k} style={{ width: column.width || "15%" }}>
                       {linkID ? (
                         <Link to={`${link + row[linkID]}/`}>
                           {renderCell(row, column)}
@@ -228,7 +255,7 @@ const BasicDataTable = ({
                       )}
                     </td>
                   ))}
-                  {statusField && idField && updateStatus && (
+                  {statusField && idField && updateStatus ? (
                     <td>
                       <button
                         onClick={() => updateStatus(row[idField])}
@@ -237,13 +264,13 @@ const BasicDataTable = ({
                         {row[statusField] ? "Cancel Approval" : "Approve"}
                       </button>
                     </td>
-                  )}
+                  ) : null}
                 </tr>
               ))
             ) : (
               <tr>
                 <td
-                  colSpan={showSL ? columns.length + 1 : columns.length}
+                  colSpan={showSerial ? columns.length + 1 : columns.length}
                   style={{ textAlign: "center" }}
                 >
                   {loading ? <h3>Loading...</h3> : <h3>No Data Found</h3>}
@@ -254,10 +281,10 @@ const BasicDataTable = ({
           <tfoot>
             <tr>
               <td colSpan={columns.length + 1}>
-                <div className="d-flex justify-content-end align-items-center">
+                <div className="d-flex justify-content-center align-items-center">
                   <div className="form-inline">
                     <select
-                      className="form-select form-select-sm form-select-solid"
+                      className="form-select form-select form-select-solid"
                       value={rowsPerPage}
                       onChange={handleChangeRowsPerPage}
                     >
@@ -267,31 +294,25 @@ const BasicDataTable = ({
                       <option value={100}>100</option>
                     </select>
                   </div>
-                  <span className="mx-2">
-                    {labelDisplayedRows({
-                      from: rows.length === 0 ? 0 : page * rowsPerPage + 1,
-                      to: getLabelDisplayedRowsTo(),
-                      count: rows.length === -1 ? -1 : count,
-                    })}
-                  </span>
+                  <span className="mx-5">{getPaginationFromToString()}</span>
                   <div className="btn-group">
                     <button
                       type="button"
                       className="btn btn-light btn-icon"
-                      disabled={page === 0}
-                      onClick={() => handleChangePage(page - 1)}
+                      disabled={page === 1}
+                      onClick={() =>
+                        handleNavigate(page - 1, rowsPerPage, search)
+                      }
                     >
                       <FontAwesomeIcon icon={faChevronLeft} />
                     </button>
                     <button
                       type="button"
                       className="btn btn-light btn-icon"
-                      disabled={
-                        rows.length !== -1
-                          ? page >= Math.ceil(count / rowsPerPage) - 1
-                          : false
+                      disabled={getPaginationTo() === count}
+                      onClick={() =>
+                        handleNavigate(page + 1, rowsPerPage, search)
                       }
-                      onClick={() => handleChangePage(page + 1)}
                     >
                       <FontAwesomeIcon icon={faChevronRight} />
                     </button>

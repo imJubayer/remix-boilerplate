@@ -6,7 +6,7 @@ import {
 } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import { addRole } from "~/models/role.server";
-import { roleSchema } from "~/schema/rbac";
+import { roleSchema } from "~/schema/rbac.validation";
 import * as yup from "yup";
 import { abort, hasPermission } from "~/utils";
 import { getUser } from "~/session.server";
@@ -27,8 +27,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     const validatedData = await roleSchema.validate(formDataObject, {
       abortEarly: false,
     });
-    const { name } = validatedData;
-    await addRole(name);
+    const { name, description } = validatedData;
+    await addRole(name, description);
 
     // session.flash("success", "Role added successfully");
     return redirect("/roles");
@@ -69,10 +69,10 @@ export default function AddRole() {
           <Form id="add_role_form" className="form form-validate" method="POST">
             <div
               className="d-flex flex-column scroll-y px-5 px-lg-10"
-              id="add_user"
+              id="add-role"
             >
               <div className="fv-row">
-                <label className="required required form-label fw-semibold fs-6 mb-2">
+                <label className="required form-label fw-semibold fs-6 mb-2">
                   Name
                 </label>
 
@@ -89,6 +89,23 @@ export default function AddRole() {
                     {actionData.errors.name}
                   </div>
                 ) : null}
+              </div>
+            </div>
+            <div
+              className="d-flex flex-column scroll-y px-5 px-lg-10 pt-5"
+              id="add-description"
+            >
+              <div className="fv-row">
+                <label className="form-label fw-semibold fs-6 mb-2">
+                  Description
+                </label>
+
+                <textarea
+                  id="add-role-description"
+                  name="description"
+                  className={`form-control form-control-solid mb-3 mb-lg-0`}
+                  placeholder="Role description"
+                />
               </div>
             </div>
 

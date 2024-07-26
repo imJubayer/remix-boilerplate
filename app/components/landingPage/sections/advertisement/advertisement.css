@@ -1,0 +1,86 @@
+.advertisement_section {
+    padding: 64px 0;
+    background-color: #f0f1f7;
+  }
+  .advertisement_section .heading {
+    color: #2b273c;
+    text-align: center;
+    font-family: "Poppins", sans-serif;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 44.8px;
+    margin-bottom: 32px;
+  }
+  .advertisement_section .advertise_card {
+    border-radius: 32px;
+    background-color: #fff;
+    padding: 64px 50px;
+  }
+  .advertisement_section .advertise_card .body {
+    margin-top: 16px;
+  }
+  .advertisement_section .advertise_card .body .subheading {
+    color: #808183;
+    text-align: center;
+    font-family: "Poppins", sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 30px;
+    margin-bottom: 16px;
+  }
+  .advertisement_section .advertise_card .body .heading {
+    color: #2b273c;
+    text-align: center;
+    font-family: "Poppins", sans-serif;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 36px;
+  }
+  .advertisement_section .advertise_card .body .pera {
+    color: #2b273c;
+    text-align: center;
+    font-family: "Poppins", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+    margin-bottom: 24px;
+  }
+  .advertisement_section .advertise_card .body .list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: #2b273c;
+    font-family: "Poppins", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    margin-bottom: 24px;
+  }
+  .advertisement_section .advertise_card .body .read_more {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #4b4e67;
+    background-color: #4b4e67;
+    color: #fff;
+    text-align: center;
+    font-family: "Google Sans";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 22px;
+  }
+  .advertisement_section .advertise_card .body .read_more, .advertisement_section .advertise_card .body .read_more * {
+    cursor: pointer;
+  }
+  
+  @media only screen and (max-width: 992px) {
+    .advertisement_section .advertise_card {
+      padding: 34px 20px;
+    }
+  }

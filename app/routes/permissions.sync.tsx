@@ -1,7 +1,12 @@
-import { useLoaderData, useSubmit } from "@remix-run/react";
+import { useActionData, useLoaderData, useSubmit } from "@remix-run/react";
 
 import { Permission, Role } from "@prisma/client";
-import { ActionFunction, LoaderFunctionArgs, json } from "@remix-run/node";
+import {
+  ActionFunction,
+  LoaderFunctionArgs,
+  json,
+  redirect,
+} from "@remix-run/node";
 import { getRoles } from "~/models/role.server";
 import { getUser } from "~/session.server";
 import {
@@ -16,21 +21,34 @@ import {
   faTimesCircle,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import { abort, hasPermission } from "~/utils";
+import {
+  abort,
+  handleErrorToast,
+  handleSuccessToast,
+  hasPermission,
+} from "~/utils";
+import { useEffect } from "react";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await getUser(request);
-  const roles: Role[] = await getRoles();
-  const permissions: Permission[] = await getPermissions();
-  if (!hasPermission(user, ["sync-permission"])) {
-    abort(403);
+  if (!hasPermission(user, ["view-permission"])) {
+    return redirect("/forbidden");
   }
+  const { roles } = await getRoles();
+  const permissions: Permission[] = await getPermissions();
   // await requireRoles(request, ["superadmin"]);
 
   return json({ roles, permissions, user });
 };
 
 export const action: ActionFunction = async ({ request }) => {
+  const user = await getUser(request);
+  if (!hasPermission(user, ["add-permission"])) {
+    return json(
+      { success: false, msg: `You don't have permission` },
+      { status: 403 },
+    );
+  }
   const formData = await request.formData();
   const roleId = formData.get("roleId");
   const permissionId = formData.get("permissionId");
@@ -42,14 +60,15 @@ export const action: ActionFunction = async ({ request }) => {
     } else {
       await removePermissionFromRole(roleId, permissionId);
     }
-    return json({ success: true });
+    return json({ success: true, msg: "Successfully synced" }, { status: 200 });
   }
 
-  return json({ success: false }, { status: 400 });
+  return json({ success: false, msg: "Something wrong" }, { status: 400 });
 };
 
 function Sync() {
-  const { roles, permissions, user } = useLoaderData<typeof loader>();
+  const { roles, permissions } = useLoaderData<typeof loader>();
+  const actiondata = useActionData<typeof action>();
 
   const submit = useSubmit();
 
@@ -65,6 +84,18 @@ function Sync() {
     submit(formData, { method: "post" });
   };
 
+  useEffect(() => {
+    console.log(actiondata);
+    if (actiondata) {
+      if (actiondata.success && actiondata.msg) {
+        handleSuccessToast(actiondata.msg);
+      } else {
+        if (actiondata.msg) {
+          handleErrorToast(actiondata.msg);
+        }
+      }
+    }
+  }, [actiondata]);
   return (
     <div className="card">
       <table
@@ -104,6 +135,7 @@ function Sync() {
             <tr key={permission.id}>
               <td className="text-center">{permission.action}</td>
               {roles.map((role) => {
+                // @ts-ignore
                 const hasRole = permission.roles.find(
                   (pRole: Role) => pRole.id === role.id,
                 );

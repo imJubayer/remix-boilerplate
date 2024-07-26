@@ -1,5 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import { faker } from "@faker-js/faker";
+import { PrismaClient } from "@prisma/client";
+
 import { seedPermissions } from "./permissionSeeder";
 import { seedRoles } from "./roleSeeder";
 import { seedUsers } from "./userSeeder";
@@ -11,14 +12,12 @@ async function seed() {
   await seedRoles();
   await seedUsers();
 
-  console.info(`🎭 User roles and permissions has been successfully created.`);
-
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < 50; i++) {
     await prisma.category.create({
       data: {
         name: faker.commerce.department(),
         description: faker.lorem.sentence(),
-        status: faker.helpers.arrayElement(["active", "inactive"]),
+        status: faker.helpers.arrayElement(["Active", "Inactive"]),
       },
     });
   }

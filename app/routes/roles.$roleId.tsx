@@ -7,7 +7,7 @@ import {
 import { getRole, updateRole } from "~/models/role.server";
 import invariant from "tiny-invariant";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
-import { roleSchema } from "~/schema/rbac";
+import { roleSchema } from "~/schema/rbac.validation";
 import * as yup from "yup";
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
@@ -85,6 +85,24 @@ export default function EditRole() {
                   {actionData.errors.name}
                 </div>
               ) : null}
+            </div>
+          </div>
+          <div
+            className="d-flex flex-column scroll-y px-5 px-lg-10 pt-5"
+            id="edit-role"
+          >
+            <div className="fv-row">
+              <label className="form-label fw-semibold fs-6 mb-2">
+                Description
+              </label>
+
+              <textarea
+                id="edit-role-description"
+                name="description"
+                className={`form-control form-control-solid mb-3 mb-lg-0`}
+                placeholder="Role description"
+                defaultValue={role.description}
+              />
             </div>
           </div>
 

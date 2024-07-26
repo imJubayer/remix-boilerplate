@@ -7,7 +7,7 @@ import { faker } from "@faker-js/faker";
 const prisma = new PrismaClient();
 
 export async function seedUsers() {
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 100; i++) {
     const email = faker.internet.email();
     const pass = await bcrypt.hash("password", 10);
     const user = await prisma.user.create({

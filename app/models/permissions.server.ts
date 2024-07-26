@@ -2,7 +2,6 @@
  * Permissions and Roles.
  * Implementation based on github.com/epicweb-dev/epic-stack
  */
-import { json } from "@remix-run/node";
 import { RoleName } from "~/types/rbac";
 import { useUser } from "~/utils";
 

@@ -1,5 +1,5 @@
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -10,6 +10,8 @@ generator client {
 model User {
   id        String    @id @default(cuid())
   email     String    @unique
+  emailVerifiedAt DateTime?
+  force_password_change Boolean     @default(false)
   deletedAt DateTime? // Soft delete field
 
   createdAt DateTime  @default(now())
@@ -22,6 +24,22 @@ model User {
 
   notes     Note[]
   profile   Profile?
+  business  Business?
+  favourites FavouriteUser[]
+  businessTeam BusinessTeam?
+  userSecret UserSecret?
+}
+
+model UserSecret {
+  id        String    @id @default(cuid())
+  userId    String   @unique
+  secret    String 
+  expiredAt DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Role {
@@ -51,16 +69,73 @@ model Permission {
   @@unique([action, entity, access])
 }
 
+model Business {
+  id                        String    @id @default(cuid())
+  user_id                   String    @unique
+  name                      String
+  phone                     String
+  category_id               String?
+  subscription              String?
+  email                     String?
+  website_url               String?
+  owner_name                String?
+  contact_number            String?
+  tax_identification_number String?
+  operating_hours           String?
+  payment_information       String?
+  post_code                 String?
+  address                   String?
+  country                   String?
+  social_media_links        Json?
+
+  user                      User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  category                  Category? @relation(fields: [category_id], references: [id])
+
+  businessTeam              BusinessTeam[]
+  favourite                 FavouriteUser[]
+
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
+}
+
+model BusinessTeam {
+  id          String   @id @default(cuid())
+  user_id      String   @unique
+  business_id  String  
+
+  user        User  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  business    Business @relation(fields: [business_id], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FavouriteUser {
+  id           String   @id @default(cuid())
+  user_id      String  
+  business_id  String  
+
+  user        User  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  business    Business @relation(fields: [business_id], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([user_id, business_id])
+}
+
 model Profile {
   id          String   @id @default(cuid())
+  user_id     String   @unique
   first_name  String
   last_name   String
   phone       String?
   gender      String?
   age         Int?
   birth       DateTime?
-  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      String   @unique
+  address     String?
+  profile_image String?
+  user        User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -75,6 +150,7 @@ model Password {
 
 model Note {
   id    String @id @default(cuid())
+  userId String
   title String
   body  String
 
@@ -82,19 +158,21 @@ model Note {
   updatedAt DateTime @updatedAt
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String
 }
 
 model Category {
-  id            Int @id @default(autoincrement())
+  id            String @id @default(cuid())
   name          String
   description   String?
   status        String
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now())
+  deletedAt     DateTime?
 
-  parentId      Int?
+  parentId      String?
   parent        Category?  @relation("Subcategories", fields: [parentId], references: [id])
   subcategories Category[] @relation("Subcategories")
+  image         String?
+  businesses    Business[]
 }

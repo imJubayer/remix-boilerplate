@@ -1,48 +1,63 @@
-import {
-  faPen,
-  faPlusSquare,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlusSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Role } from "@prisma/client";
 import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
-import { Form, Link, useLoaderData } from "@remix-run/react";
-import { useState } from "react";
+import {
+  Link,
+  useActionData,
+  useLoaderData,
+  useSubmit,
+} from "@remix-run/react";
+import { useEffect } from "react";
 import BasicDataTable from "~/components/table/BasicDatatable";
 
 import { deleteRole, getRoles } from "~/models/role.server";
-import { getUser } from "~/session.server";
-import { abort, hasPermission, useUser } from "~/utils";
+import userService from "~/services/user.service";
+import { abort, handleSuccessToast, hasPermission, useUser } from "~/utils";
+import { roleColumns } from "~/utils/columns/roleColumn";
+import { showConfirmationAlert } from "~/utils/helper";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const user = await getUser(request);
-  const roles: Role[] = await getRoles();
+  const { roles, total, page, limit } = await userService.roles(request);
+  return json({ roles, total, page, limit });
+
   // if (!hasPermission(user, ["read"])) {
   //   abort(403);
   // }
   // await requireRoles(request, ["superadmin"]);
-
-  return json({ roles });
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const formData = await request.formData();
-  const roleId = formData.get("roleId");
-
-  if (typeof roleId === "string") {
-    await deleteRole(roleId);
-  }
-
-  const roles = await getRoles(); // Fetch the updated roles
-  return json({ roles });
+  const result = await userService.deleteRole(request);
+  return json(result);
 };
 
 export default function Roles() {
   const user = useUser();
-  const { roles } = useLoaderData<typeof loader>();
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const submit = useSubmit();
+  const actionData = useActionData<typeof action>();
+  const { roles, total, page, limit } = useLoaderData<typeof loader>();
   const hasAddRolePermission = hasPermission(user, ["add-role"]);
+
+  const handleRoleDelete = async (roleId: string) => {
+    const isDeletionConfirmed = await showConfirmationAlert(
+      "Are you sure?",
+      "Delete this role?",
+      "Yes, delete!",
+      "Cancel",
+    );
+
+    if (isDeletionConfirmed) {
+      const formData = new FormData();
+      formData.append("roleId", roleId);
+      submit(formData, { method: "post" });
+    }
+  };
+
+  useEffect(() => {
+    if (actionData?.success && actionData.msg) {
+      handleSuccessToast(actionData.msg);
+    }
+  }, [actionData]);
 
   const addRoleButton = (
     <Link to="add" type="button" className="btn btn-light-primary">
@@ -50,61 +65,17 @@ export default function Roles() {
       Add Role
     </Link>
   );
-  const roleColumns = [
-    { header: "Name", accessor: "name", width: "30%" },
-    { header: "Description", accessor: "description", width: "30%" },
-    {
-      header: "Action",
-      content: (role: Role) => {
-        return (
-          <>
-            <Form method="post">
-              {role.is_modifiable ? (
-                <Link
-                  to={role.id}
-                  className="btn btn-icon btn-active-light-primary w-30px h-30px me-3"
-                >
-                  <FontAwesomeIcon icon={faPen} className="text-primary" />
-                </Link>
-              ) : (
-                <button
-                  disabled
-                  className="btn btn-icon btn-active-light-primary w-30px h-30px me-3"
-                >
-                  <FontAwesomeIcon icon={faPen} className="text-primary" />
-                </button>
-              )}
-
-              <input type="hidden" name="roleId" value={role.id} />
-              <button
-                disabled={!role.is_modifiable}
-                type="submit"
-                className="btn btn-icon btn-active-light-primary w-30px h-30px"
-              >
-                <FontAwesomeIcon icon={faTrash} color="red" />
-              </button>
-            </Form>
-          </>
-        );
-      },
-    },
-  ];
   return (
     <div>
       <BasicDataTable
-        searchable
+        showSerial
         secondary={hasAddRolePermission && addRoleButton}
-        columns={roleColumns}
+        columns={roleColumns(handleRoleDelete)}
         rows={roles}
-        count={roles.length}
+        count={total}
         page={page}
-        rowsPerPage={rowsPerPage}
-        setPage={setPage}
-        setRowsPerPage={setRowsPerPage}
-        // updateStatus={updateStatus}
-        showSL={true}
-        sortables={["id", "name", "email", "status"]}
-        // updateRows={(data) => setRows(data)}
+        rowsPerPage={limit}
+        // sortables={["id", "name", "email", "status"]}
       />
     </div>
   );

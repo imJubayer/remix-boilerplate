@@ -1,0 +1,259 @@
+.contact_form_section {
+  padding: 90px 0;
+}
+.contact_form_section .heading {
+  color: #323539;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 40px;
+  letter-spacing: -0.48px;
+  margin-bottom: 16px;
+}
+.contact_form_section .paragraph {
+  color: #858c95;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: -0.18px;
+  max-width: 800px;
+  margin: 0 auto 60px;
+}
+.contact_form_section .form_wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+.contact_form_section .form_wrapper .input_box {
+  width: 100%;
+}
+.contact_form_section .form_wrapper .input_box label {
+  color: #323539;
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.1px;
+  margin-bottom: 8px;
+}
+.contact_form_section .form_wrapper .input_box input,
+.contact_form_section .form_wrapper .input_box textarea,
+.contact_form_section .form_wrapper .input_box select {
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #e5e5e7;
+  background: #f8f9fb;
+  color: #858c95;
+  font-family: "Inter", sans-serif;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+  width: 100%;
+}
+.contact_form_section .form_wrapper .input_box input,
+.contact_form_section .form_wrapper .input_box input *,
+.contact_form_section .form_wrapper .input_box textarea,
+.contact_form_section .form_wrapper .input_box textarea *,
+.contact_form_section .form_wrapper .input_box select,
+.contact_form_section .form_wrapper .input_box select * {
+  cursor: text;
+}
+.contact_form_section .form_wrapper .input_box input::-webkit-input-placeholder,
+.contact_form_section
+  .form_wrapper
+  .input_box
+  textarea::-webkit-input-placeholder,
+.contact_form_section
+  .form_wrapper
+  .input_box
+  select::-webkit-input-placeholder {
+  color: #858c95;
+}
+.contact_form_section .form_wrapper .input_box textarea {
+  min-height: 140px;
+}
+.contact_form_section .form_wrapper .input_box.half_width {
+  width: calc(50% - 12px);
+}
+.contact_form_section .form_wrapper .check_box {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.contact_form_section .form_wrapper .check_box input,
+.contact_form_section .form_wrapper .check_box input * {
+  cursor: pointer;
+}
+.contact_form_section .form_wrapper .check_box .text {
+  color: #323539;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: -0.16px;
+}
+.contact_form_section .form_wrapper .submit_btn {
+  border-radius: 6px;
+  background: #4b4e67;
+  border: none;
+  padding: 12px 20px;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 22px;
+}
+.contact_form_section .form_wrapper .submit_btn,
+.contact_form_section .form_wrapper .submit_btn * {
+  cursor: pointer;
+}
+.contact_form_section .info_wrapper {
+  padding: 0 30px;
+}
+.contact_form_section .info_wrapper .heading {
+  color: #323539;
+  font-family: "Inter", sans-serif;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: -0.18px;
+  margin-bottom: 16px;
+  text-align: left;
+}
+.contact_form_section .info_wrapper .para {
+  color: #858c95;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: -0.16px;
+  margin-bottom: 8px;
+}
+.contact_form_section .info_wrapper .link {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #0b124c;
+  font-family: "Inter", sans-serif;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 22px;
+}
+.contact_form_section .info_wrapper .link,
+.contact_form_section .info_wrapper .link * {
+  cursor: pointer;
+}
+.contact_form_section .info_wrapper .link .icon_box {
+  width: 20px;
+  height: 30px;
+}
+.contact_form_section .info_wrapper .link .icon_box svg {
+  width: 100%;
+  height: 100%;
+  color: currentColor;
+}
+.contact_form_section .info_wrapper .get_in_touch {
+  margin-bottom: 32px;
+}
+.contact_form_section .info_wrapper .address {
+  margin-bottom: 32px;
+}
+.contact_form_section .info_wrapper .social_media .links {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.contact_form_section .info_wrapper .social_media .links li {
+  width: 24px;
+  height: 24px;
+}
+.contact_form_section .info_wrapper .social_media .links li,
+.contact_form_section .info_wrapper .social_media .links li * {
+  cursor: pointer;
+}
+.contact_form_section .info_wrapper .social_media .links li svg {
+  width: 100%;
+  height: 100%;
+  color: currentColor;
+}
+
+@media only screen and (max-width: 992px) {
+  .contact_form_section .form_wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+  .contact_form_section .form_wrapper .input_box {
+    width: 100%;
+  }
+  .contact_form_section .form_wrapper .input_box label {
+    color: #323539;
+    font-family: "Inter", sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: -0.1px;
+    margin-bottom: 8px;
+  }
+  .contact_form_section .form_wrapper .input_box input,
+  .contact_form_section .form_wrapper .input_box textarea,
+  .contact_form_section .form_wrapper .input_box select {
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #e5e5e7;
+    background: #f8f9fb;
+    color: #858c95;
+    font-family: "Inter", sans-serif;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 22px;
+    width: 100%;
+  }
+  .contact_form_section
+    .form_wrapper
+    .input_box
+    input::-webkit-input-placeholder,
+  .contact_form_section
+    .form_wrapper
+    .input_box
+    textarea::-webkit-input-placeholder,
+  .contact_form_section
+    .form_wrapper
+    .input_box
+    select::-webkit-input-placeholder {
+    color: #858c95;
+  }
+  .contact_form_section .form_wrapper .input_box textarea {
+    min-height: 140px;
+  }
+  .contact_form_section .form_wrapper .input_box.half_width {
+    width: calc(50% - 12px);
+  }
+  .contact_form_section .info_wrapper {
+    padding: 0px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact_form_section .form_wrapper .input_box.half_width {
+    width: 100%;
+  }
+}

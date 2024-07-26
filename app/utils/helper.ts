@@ -1,3 +1,9 @@
+import {
+  unstable_composeUploadHandlers,
+  unstable_createFileUploadHandler,
+  unstable_createMemoryUploadHandler,
+  UploadHandler,
+} from "@remix-run/node";
 import Swal from "sweetalert2";
 
 export const checkNullInfo = (info: string | number | null | undefined) => {
@@ -18,7 +24,7 @@ export function checkDecimal(inputValue: any) {
   return 0;
 }
 
-export function regEmailTempalte(name: string): string {
+export function regEmailTemplate(name: string): string {
   return `
     <div style="font-family: Arial, sans-serif; line-height: 1.6;">
       <h2>Welcome to AllinOne</h2>
@@ -55,3 +61,15 @@ export const showConfirmationAlert = async (
 
   return result.isConfirmed;
 };
+
+export function generateRandomSixDigitNumber(): number {
+  return Math.floor(100000 + Math.random() * 900000);
+}
+
+export function getMediaPath(fileName: string) {
+  return `/assets/media/${fileName}`;
+}
+
+export function getProfilePhotoPath(fileName: string | undefined) {
+  return `/uploads/${fileName}`;
+}

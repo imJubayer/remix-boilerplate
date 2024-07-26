@@ -2,17 +2,15 @@ import { LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useLocation } from "@remix-run/react";
 
 import MainLayout from "~/components/layouts/main";
+import { requireAuth } from "~/models/user.server";
 import { getUser } from "~/session.server";
 import { abort, hasRole } from "~/utils";
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const requiredRoles = ["admin", "superadmin"];
-  const user = await getUser(request);
-  if (!hasRole(user, requiredRoles)) {
-    abort(403);
-  }
-  return {};
-};
+// export const loader = async ({ request }: LoaderFunctionArgs) => {
+//   const requiredRoles = ["admin", "superadmin"];
+//   const user = await requireAuth(request);
+//   return {};
+// };
 
 export default function UsersIndex() {
   const location = useLocation();

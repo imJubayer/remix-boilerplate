@@ -9,6 +9,7 @@ import { getUserById, type User } from "~/models/user.server";
 // import { requireUser, requireUserId } from "./session.server";
 import { Permission, Role } from "@prisma/client";
 import { IUser } from "./types/authentication";
+import { ResponseFormat } from "./types/common";
 
 const DEFAULT_REDIRECT = "/";
 
@@ -78,7 +79,8 @@ export function useUser(): IUser {
   return maybeUser;
 }
 
-export function hasRole(user: IUser | null, requiredRoles: string[]): boolean {
+export function hasRole(user: IUser, requiredRoles: string[]): boolean {
+  // const user = useUser();
   if (!user || !user.role) {
     return false; // If user is null or user has no role, return false
   }
@@ -123,6 +125,9 @@ export function hasPermission(
     if (!user) {
       return false; // User not authenticated or not found
     }
+    if (hasRole(user, ["superadmin"])) {
+      return true;
+    }
 
     // Check if any of the user's roles have the required permissions
     const hasPermission = user.role?.permissions.some(
@@ -145,3 +150,19 @@ export const handleSuccessToast = (msg: string) => {
 export const handleErrorToast = (msg: string) => {
   toast.error(msg);
 };
+
+export function handleResponse<T>({
+  success,
+  msg = "",
+  status = 200,
+  data = null,
+  errors = null,
+}: ResponseFormat<T>): ResponseFormat<T> {
+  return {
+    success,
+    msg,
+    status,
+    data,
+    errors,
+  };
+}

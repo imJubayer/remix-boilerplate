@@ -2,8 +2,9 @@ import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { User } from "@prisma/client";
 import { Link } from "@remix-run/react";
-import moment from "moment";
+import dayjs from "dayjs";
 import { IUser } from "~/types/authentication";
+import { getProfilePhotoPath, getMediaPath } from "../helper";
 
 export const userColumns = (handleUserDelete: (userId: string) => void) => [
   {
@@ -12,10 +13,14 @@ export const userColumns = (handleUserDelete: (userId: string) => void) => [
       return (
         <div className="d-flex align-items-center">
           <div className="symbol symbol-circle symbol-50px overflow-hidden me-3">
-            <Link to="/users">
+            <Link to={`/users/${user.id}`}>
               <div className="symbol-label">
                 <img
-                  src="assets/media/avatars/300-6.jpg"
+                  src={
+                    user.profile?.profile_image
+                      ? getProfilePhotoPath(user.profile?.profile_image)
+                      : getMediaPath("/avatars/blank.png")
+                  }
                   alt={user.profile?.first_name}
                   className="w-100"
                 />
@@ -23,27 +28,36 @@ export const userColumns = (handleUserDelete: (userId: string) => void) => [
             </Link>
           </div>
           <div className="d-flex flex-column">
-            <Link to="users" className="text-gray-800 text-hover-primary mb-1">
-              {user.profile?.first_name}
+            <Link
+              to={`/users/${user.id}`}
+              className="text-gray-800 text-hover-primary mb-1"
+            >
+              {user.profile?.first_name} {user.profile?.last_name}
             </Link>
             <span>{user.email}</span>
           </div>
         </div>
       );
     },
-    width: "20% !important",
+    width: "30% !important",
   },
   {
     header: "Role",
     accessor: "role",
     content: (user: IUser) => {
-      return <div>{user.role?.name.toUpperCase()}</div>;
+      return (
+        <div>
+          <button className="btn btn-sm btn-light-primary fw-bold fs-8 py-1 px-3">
+            {user.role?.name.toUpperCase()}
+          </button>
+        </div>
+      );
     },
   },
   {
     header: "Joined Date",
     content: (user: User) => {
-      return <div>{moment(user.createdAt).format("LL")}</div>;
+      return <div>{dayjs(user.createdAt).format("D MMMM, YYYY")}</div>;
     },
   },
   {

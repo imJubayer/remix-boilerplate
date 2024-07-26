@@ -2,9 +2,12 @@ node_modules
 
 /build
 /public/build
+/public/uploads
 .env
 
 /cypress/screenshots
 /cypress/videos
 /prisma/data.db
 /prisma/data.db-journal
+
+.idea/

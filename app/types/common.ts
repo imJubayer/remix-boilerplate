@@ -9,3 +9,11 @@ export interface ColumnType {
   content?: any;
   width?: string;
 }
+
+export interface ResponseFormat<T> {
+  success: boolean;
+  msg?: string;
+  data?: T | null;
+  errors?: any;
+  status?: number;
+}

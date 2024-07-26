@@ -1,16 +1,16 @@
-import { LoaderFunctionArgs } from "@remix-run/node";
+import { LoaderFunctionArgs, redirect } from "@remix-run/node";
 import { Outlet, useLocation } from "@remix-run/react";
 import { useEffect } from "react";
 
 import MainLayout from "~/components/layouts/main";
 import { getUser } from "~/session.server";
-import { abort, handleSuccessToast, hasRole } from "~/utils";
+import { handleSuccessToast, hasRole } from "~/utils";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const requiredRoles = ["admin", "superadmin"];
   const user = await getUser(request);
-  if (!hasRole(user, requiredRoles)) {
-    abort(403);
+  if (user && !hasRole(user, requiredRoles)) {
+    return redirect("/forbidden");
   }
   return {};
 };

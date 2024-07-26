@@ -1,16 +1,18 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBank,
+  faBriefcase,
   faCopy,
-  faGift,
   faHome,
+  faThumbsUp,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import { json } from "@remix-run/node";
 import { Form, Link, useLocation } from "@remix-run/react";
-import { useUser, hasRole } from "~/utils";
+import { useUser, hasRole, hasPermission } from "~/utils";
 import { IUser } from "~/types/authentication";
+import { getMediaPath, getProfilePhotoPath } from "~/utils/helper";
 
 export const loader = async ({ request }: any) => {
   const url = new URL(request.url);
@@ -64,8 +66,12 @@ const Sidebar = () => {
             >
               <div className="d-flex flex-center cursor-pointer symbol symbol-custom symbol-40px">
                 <img
-                  src="assets/media/avatars/300-2.jpg"
-                  alt="image"
+                  src={
+                    user.profile?.profile_image
+                      ? getProfilePhotoPath(user.profile?.profile_image)
+                      : getMediaPath("/avatars/blank.png")
+                  }
+                  alt={user.profile?.first_name}
                   onClick={() => setShowHeader(!showHeader)}
                 />
               </div>
@@ -87,14 +93,21 @@ const Sidebar = () => {
                 <div className="menu-item px-3">
                   <div className="menu-content d-flex align-items-center px-3">
                     <div className="symbol symbol-50px me-5">
-                      <img alt="Logo" src="assets/media/avatars/300-2.jpg" />
+                      <img
+                        alt={user.profile?.first_name}
+                        src={
+                          user.profile?.profile_image
+                            ? getProfilePhotoPath(user.profile?.profile_image)
+                            : getMediaPath("/avatars/blank.png")
+                        }
+                      />
                     </div>
 
                     <div className="d-flex flex-column">
                       <div className="fw-bold d-flex align-items-center fs-5">
                         {user.profile?.first_name}
                         <span className="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">
-                          Pro
+                          {user.role.name.toUpperCase()}
                         </span>
                       </div>
                       <a
@@ -107,19 +120,19 @@ const Sidebar = () => {
                   </div>
                 </div>
 
-                <div className="separator my-2"></div>
+                <div className="custom-separator my-2"></div>
 
                 <div className="menu-item px-5">
-                  <Link className="menu-link px-5" to="/profile">
+                  <Link className="custom-menu-link px-5" to="/profile">
                     My Profile
                   </Link>
                 </div>
 
-                <div className="separator my-2"></div>
+                <div className="custom-separator my-2"></div>
 
                 <div className="menu-item px-5">
                   <Form action="/logout" method="post">
-                    <button type="submit" className="menu-link px-5">
+                    <button type="submit" className="btn btn-light-primary">
                       Logout
                     </button>
                   </Form>
@@ -174,7 +187,7 @@ const Sidebar = () => {
             </div>
             <div className="menu-item">
               <Link
-                className={`menu-link ${location.pathname === "/categories" ? "here active" : ""}`}
+                className={`menu-link ${location.pathname.startsWith("/categories") ? "here active" : ""}`}
                 to="/categories"
               >
                 <span className="menu-icon">
@@ -182,15 +195,114 @@ const Sidebar = () => {
                     icon={faCopy}
                     className="fs-2"
                     style={{
-                      color: location.pathname === "/categories" ? "white" : "",
+                      color: location.pathname.startsWith("/categories")
+                        ? "white"
+                        : "",
                     }}
                   />
                 </span>
                 <span className="menu-title">Cateogry Management</span>
               </Link>
             </div>
+            {/* {hasRole(user, ["businessUser"]) && (
+              <div className="menu-item">
+                <Link
+                  className={`menu-link ${location.pathname === "/business/team" || location.pathname === "/business/add-member" ? "here active" : ""}`}
+                  to="/business/team"
+                >
+                  <span className="menu-icon">
+                    <FontAwesomeIcon
+                      icon={faUserGroup}
+                      className="fs-2"
+                      style={{
+                        color:
+                          location.pathname === "/business/team" ||
+                          location.pathname === "/business/add-member"
+                            ? "white"
+                            : "",
+                      }}
+                    />
+                  </span>
+                  <span className="menu-title">Team Management</span>
+                </Link>
+              </div>
+            )} */}
 
-            {hasRole(user, ["superadmin", "admin", "user"]) && (
+            {hasRole(user, ["businessUser"]) && (
+              <div
+                className={`menu-item menu-accordion ${activeMenu === "business" || location.pathname.startsWith("/business") ? "here show" : ""}`}
+                onClick={() => handleMenuClick("business")}
+              >
+                <span className="menu-link">
+                  <span className="menu-icon">
+                    <FontAwesomeIcon className="fs-2" icon={faBriefcase} />
+                  </span>
+                  <span className="menu-title">Business</span>
+                  <span className="menu-arrow"></span>
+                </span>
+
+                <div className="menu-sub menu-sub-accordion menu-active-bg">
+                  <div className="menu-item">
+                    <Link
+                      className={`menu-link ${location.pathname === "/business/information" ? "here active" : ""}`}
+                      to="/business/information"
+                    >
+                      <span className="menu-bullet">
+                        <span className="bullet bullet-dot"></span>
+                      </span>
+                      <span className="menu-title">Business Infomation</span>
+                    </Link>
+                  </div>
+                  <div className="menu-item">
+                    <Link
+                      className={`menu-link ${location.pathname === "/business/team" || location.pathname === "/business/add-member" ? "here active" : ""}`}
+                      to="/business/team"
+                    >
+                      <span className="menu-bullet">
+                        <span className="bullet bullet-dot"></span>
+                      </span>
+                      <span className="menu-title">Team Management</span>
+                    </Link>
+                  </div>
+
+                  <div className="menu-item">
+                    <Link
+                      className={`menu-link ${location.pathname === "/business/favourite-users" ? "here active" : ""}`}
+                      to="/business/favourite-users"
+                    >
+                      <span className="menu-bullet">
+                        <span className="bullet bullet-dot"></span>
+                      </span>
+                      <span className="menu-title">Favourite User's</span>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
+            {hasRole(user, ["user"]) && (
+              <div className="menu-item">
+                <Link
+                  className={`menu-link ${location.pathname.startsWith("/business/favourite") ? "here active" : ""}`}
+                  to="/business/favourite-business"
+                >
+                  <span className="menu-icon">
+                    <FontAwesomeIcon
+                      icon={faThumbsUp}
+                      className="fs-2"
+                      style={{
+                        color: location.pathname.startsWith(
+                          "/business/favourite",
+                        )
+                          ? "white"
+                          : "",
+                      }}
+                    />
+                  </span>
+                  <span className="menu-title">Favourite Business</span>
+                </Link>
+              </div>
+            )}
+            {hasPermission(user, ["view-users", "add-user"]) && (
               <>
                 <div className="menu-item pt-5">
                   <div className="menu-content">
@@ -201,45 +313,110 @@ const Sidebar = () => {
                 </div>
                 <div
                   data-kt-menu-trigger="click"
-                  className={`menu-item menu-accordion ${activeMenu === "users" || location.pathname === "/users/add" || location.pathname === "/users" ? "here show" : ""}`}
+                  className={`menu-item menu-accordion ${activeMenu === "users" || location.pathname.startsWith("/users") ? "here show" : ""}`}
                   onClick={() => handleMenuClick("users")}
                 >
                   <span className="menu-link">
                     <span className="menu-icon">
-                      <FontAwesomeIcon icon={faUsers} />
+                      <FontAwesomeIcon className="fs-2" icon={faUsers} />
                     </span>
                     <span className="menu-title">Users</span>
                     <span className="menu-arrow"></span>
                   </span>
 
                   <div className="menu-sub menu-sub-accordion menu-active-bg">
-                    <div className="menu-item">
-                      <Link
-                        className={`menu-link ${location.pathname === "/users" ? "here active" : ""}`}
-                        to="/users"
-                      >
-                        <span className="menu-bullet">
-                          <span className="bullet bullet-dot"></span>
-                        </span>
-                        <span className="menu-title">Users List</span>
-                      </Link>
-                    </div>
+                    {hasPermission(user, ["view-users"]) && (
+                      <div className="menu-item">
+                        <Link
+                          className={`menu-link ${location.pathname === "/users" ? "here active" : ""}`}
+                          to="/users"
+                        >
+                          <span className="menu-bullet">
+                            <span className="bullet bullet-dot"></span>
+                          </span>
+                          <span className="menu-title">Users List</span>
+                        </Link>
+                      </div>
+                    )}
 
-                    <div className="menu-item">
-                      <Link
-                        className={`menu-link ${location.pathname === "/users/add" ? "here active" : ""}`}
-                        to="/users/add"
-                      >
-                        <span className="menu-bullet">
-                          <span className="bullet bullet-dot"></span>
-                        </span>
-                        <span className="menu-title">Add User</span>
-                      </Link>
-                    </div>
+                    {hasPermission(user, ["add-user"]) && (
+                      <div className="menu-item">
+                        <Link
+                          className={`menu-link ${location.pathname === "/users/add" ? "here active" : ""}`}
+                          to="/users/add"
+                        >
+                          <span className="menu-bullet">
+                            <span className="bullet bullet-dot"></span>
+                          </span>
+                          <span className="menu-title">Add User</span>
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 </div>
               </>
             )}
+
+            {/* <div className="menu-item pt-5">
+              <div className="menu-content">
+                <span className="menu-heading fw-bold text-uppercase fs-7">
+                  Profile Management
+                </span>
+              </div>
+            </div> */}
+            {/* <div
+              data-kt-menu-trigger="click"
+              className={`menu-item menu-accordion ${activeMenu === "profile-management" || location.pathname === "/business/information" || location.pathname === "/profile" || location.pathname === "/change-password" ? "here show" : ""}`}
+              onClick={() => handleMenuClick("profile-management")}
+            >
+              <span className="menu-link">
+                <span className="menu-icon">
+                  <FontAwesomeIcon icon={faUserTie} />
+                </span>
+                <span className="menu-title">Profile Management</span>
+                <span className="menu-arrow"></span>
+              </span>
+
+              <div className="menu-sub menu-sub-accordion menu-active-bg">
+                <div className="menu-item">
+                  <Link
+                    className={`menu-link ${location.pathname === "/profile" ? "here active" : ""}`}
+                    to="/profile"
+                  >
+                    <span className="menu-bullet">
+                      <span className="bullet bullet-dot"></span>
+                    </span>
+                    <span className="menu-title">My Profile</span>
+                  </Link>
+                </div>
+
+                {hasRole(user, ["superadmin", "admin", "businessUser"]) && (
+                  <div className="menu-item">
+                    <Link
+                      className={`menu-link ${location.pathname === "/business/information" ? "here active" : ""}`}
+                      to="/business/information"
+                    >
+                      <span className="menu-bullet">
+                        <span className="bullet bullet-dot"></span>
+                      </span>
+                      <span className="menu-title">Business Infomation</span>
+                    </Link>
+                  </div>
+                )}
+
+                <div className="menu-item">
+                  <Link
+                    className={`menu-link ${location.pathname === "/change-password" ? "here active" : ""}`}
+                    to="/change-password"
+                  >
+                    <span className="menu-bullet">
+                      <span className="bullet bullet-dot"></span>
+                    </span>
+                    <span className="menu-title">Change Password</span>
+                  </Link>
+                </div>
+              </div>
+            </div> */}
 
             {hasRole(user, ["superadmin", "admin"]) && (
               <>
@@ -252,12 +429,12 @@ const Sidebar = () => {
                 </div>
                 <div
                   data-kt-menu-trigger="click"
-                  className={`menu-item menu-accordion ${activeMenu === "rbac" || location.pathname === "/roles" || location.pathname === "/roles/add" || location.pathname === "/permissions" || location.pathname === "/permissions/sync" ? "here show" : ""}`}
+                  className={`menu-item menu-accordion ${activeMenu === "rbac" || location.pathname.startsWith("/roles") || location.pathname.startsWith("/permissions") ? "here show" : ""}`}
                   onClick={() => handleMenuClick("rbac")}
                 >
                   <span className="menu-link">
                     <span className="menu-icon">
-                      <FontAwesomeIcon icon={faBank} />
+                      <FontAwesomeIcon className="fs-2" icon={faBank} />
                     </span>
                     <span className="menu-title">Roles & Permissions</span>
                     <span className="menu-arrow"></span>
@@ -279,7 +456,7 @@ const Sidebar = () => {
                     <div className="menu-item">
                       <Link
                         className={`menu-link ${location.pathname === "/permissions" || location.pathname === "/permissions/sync" ? "here active" : ""}`}
-                        to="/permissions"
+                        to="/permissions/sync"
                       >
                         <span className="menu-bullet">
                           <span className="bullet bullet-dot"></span>

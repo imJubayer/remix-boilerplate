@@ -1,16 +1,16 @@
-import type { Permission, Role } from "@prisma/client";
+import type { Permission } from "@prisma/client";
 
-import { prisma } from "~/db.server";
+import { PERMISSION, ROLE } from "./table";
 
 export async function getPermissions() {
-  return prisma.permission.findMany({
+  return PERMISSION.findMany({
     include: { roles: true },
     orderBy: { updatedAt: "desc" },
   });
 }
 
 export async function getPermission(permissionId: Permission["id"]) {
-  return prisma.permission.findUnique({
+  return PERMISSION.findUnique({
     where: {
       id: permissionId,
     },
@@ -21,7 +21,7 @@ export const addPermissionToRole = async (
   roleId: string,
   permissionId: string,
 ) => {
-  const permission = await prisma.permission.findUnique({
+  const permission = await PERMISSION.findUnique({
     where: { id: permissionId },
     select: { id: true },
   });
@@ -30,7 +30,7 @@ export const addPermissionToRole = async (
     throw new Error("Permission not found");
   }
 
-  return await prisma.role.update({
+  return await ROLE.update({
     where: { id: roleId },
     data: {
       permissions: {
@@ -44,7 +44,7 @@ export const removePermissionFromRole = async (
   roleId: string,
   permissionId: string,
 ) => {
-  const permission = await prisma.permission.findUnique({
+  const permission = await PERMISSION.findUnique({
     where: { id: permissionId },
     select: { id: true },
   });
@@ -53,7 +53,7 @@ export const removePermissionFromRole = async (
     throw new Error("Permission not found");
   }
 
-  return await prisma.role.update({
+  return await ROLE.update({
     where: { id: roleId },
     data: {
       permissions: {
@@ -64,7 +64,7 @@ export const removePermissionFromRole = async (
 };
 
 // export async function addPermission(roleName: Permission["name"]) {
-//   await prisma.permission.create({
+//   await PERMISSION.create({
 //     data: {
 //       name: roleName,
 //     },
@@ -72,7 +72,7 @@ export const removePermissionFromRole = async (
 // }
 
 // export async function updatePermission(roleId: Role["id"], roleName: Role["name"]) {
-//   const existingRole = await prisma.permission.findUnique({
+//   const existingRole = await PERMISSION.findUnique({
 //     where: {
 //       id: roleId,
 //     },
@@ -82,7 +82,7 @@ export const removePermissionFromRole = async (
 //     throw new Error(`Role with id ${roleId} not found`);
 //   }
 
-//   await prisma.permission.update({
+//   await PERMISSION.update({
 //     where: {
 //       id: roleId,
 //     },
@@ -95,7 +95,7 @@ export const removePermissionFromRole = async (
 
 export async function deletePermission(permissionId: Permission["id"]) {
   if (permissionId) {
-    await prisma.permission.deleteMany({
+    await PERMISSION.deleteMany({
       where: {
         id: permissionId,
       },

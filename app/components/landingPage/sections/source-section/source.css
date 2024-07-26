@@ -1,0 +1,52 @@
+.source_section {
+  padding: 80px 0;
+}
+.source_section .heading {
+  color: #222;
+  font-family: "Inter", sans-serif;
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 40px;
+  margin-bottom: 40px;
+}
+.source_section .source_card {
+  position: relative;
+}
+.source_section .source_card .view {
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: #db4444;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 22px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+.source_section .source_card .view,
+.source_section .source_card .view * {
+  cursor: pointer;
+}
+.source_section .source_card .badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+}
+.source_section .source_card .badge .imgbox {
+  width: 24px;
+}

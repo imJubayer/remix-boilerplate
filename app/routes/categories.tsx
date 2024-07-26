@@ -6,7 +6,11 @@ export default function CategoriesIndex() {
   const breadcrumbItems = [{ title: "Categories", link: "/categories" }];
 
   return (
-    <MainLayout title="Category Management" breadCrumb={breadcrumbItems}>
+    <MainLayout
+      title="Category Management"
+      breadCrumb={breadcrumbItems}
+      headerTitle="Category"
+    >
       <Outlet />
     </MainLayout>
   );

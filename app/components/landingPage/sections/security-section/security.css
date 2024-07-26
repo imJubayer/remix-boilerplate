@@ -1,0 +1,107 @@
+.security_section {
+  padding: 120px 0;
+  background-image: url("./../../../../../public/image/security.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.security_section .heading {
+  color: #fff;
+  text-align: center;
+  font-family: Inter;
+  font-size: 44px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 52px;
+  margin-bottom: 100px;
+}
+.security_section .security_card {
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.11);
+  -webkit-backdrop-filter: blur(25px);
+  backdrop-filter: blur(25px);
+  padding: 50px;
+}
+.security_section .security_card .subtitle {
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 26px;
+  margin-bottom: 18px;
+}
+.security_section .security_card .imgbox {
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 18px;
+}
+.security_section .security_card .pera {
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+  margin-bottom: 46px;
+}
+.security_section .security_card .button_box {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  row-gap: 20px;
+}
+.security_section .security_card .button_box .play_btn {
+  border-radius: 20px;
+  padding: 0px 20px;
+  border: 1px solid #fff;
+  background: rgba(0, 0, 0, 0.2);
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.security_section .security_card .button_box .play_btn,
+.security_section .security_card .button_box .play_btn * {
+  cursor: pointer;
+}
+.security_section .security_card .button_box .play_btn .icon_box {
+  width: 20px;
+  height: 20px;
+  display: flex;
+}
+.security_section .security_card .button_box .play_btn .icon_box svg {
+  width: 100%;
+  height: 100%;
+  color: currentColor;
+}
+.security_section .security_card .button_box .more {
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.security_section .security_card .button_box .more,
+.security_section .security_card .button_box .more * {
+  cursor: pointer;
+}
+
+@media only screen and (max-width: 768px) {
+  .security_section .heading {
+    font-size: 24px;
+    line-height: 32px;
+    margin-bottom: 40px;
+  }
+  .security_section .security_card {
+    padding: 20px;
+  }
+}

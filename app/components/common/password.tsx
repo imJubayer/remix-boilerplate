@@ -5,9 +5,16 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 interface PasswordInputProps {
   error?: string;
   value?: string;
+  name?: string;
+  placeHolder?: string;
 }
 
-const PasswordInput: FC<PasswordInputProps> = ({ error, value }) => {
+const PasswordInput: FC<PasswordInputProps> = ({
+  error,
+  value,
+  name,
+  placeHolder,
+}) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const passwordRef = useRef<HTMLInputElement>(null);
 
@@ -18,11 +25,10 @@ const PasswordInput: FC<PasswordInputProps> = ({ error, value }) => {
   return (
     <div className="fv-row mb-8 position-relative">
       <input
-        id="password"
         ref={passwordRef}
         type={isPasswordVisible ? "text" : "password"}
-        placeholder="Password"
-        name="password"
+        placeholder={placeHolder || "Password"}
+        name={name || "password"}
         autoComplete="new-password"
         aria-invalid={error ? true : undefined}
         aria-describedby="password-error"

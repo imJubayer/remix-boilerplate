@@ -1,28 +1,34 @@
-import {
-  faMagnifyingGlass,
-  faPlusSquare,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlusSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  json,
+  redirect,
+} from "@remix-run/node";
 import {
   Link,
   useActionData,
   useLoaderData,
-  useNavigate,
   useSubmit,
 } from "@remix-run/react";
-import { debounce } from "lodash";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import BasicDataTable from "~/components/table/BasicDatatable";
 
-import userService from "~/services/userService";
+import userService from "~/services/user.service";
+import { getUser } from "~/session.server";
 import { handleSuccessToast, hasPermission, useUser } from "~/utils";
 import { userColumns } from "~/utils/columns/userColumn";
 import { showConfirmationAlert } from "~/utils/helper";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { users, total } = await userService.fetchUsers(request);
-  return json({ users, total });
+  const user = await getUser(request);
+  if (!hasPermission(user, ["view-users"])) {
+    return redirect("/forbidden");
+  }
+
+  const { users, total, page, limit } = await userService.fetchUsers(request);
+  return json({ users, total, page, limit });
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -33,50 +39,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export default function Users() {
   const user = useUser();
   const submit = useSubmit();
-  const navigate = useNavigate();
-  const { users, total } = useLoaderData<typeof loader>();
+  const { users, total, page, limit } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [search, setSearch] = useState("");
-  const [shouldNavigate, setShouldNavigate] = useState(false);
-
-  const nagigateToRoute = () => {
-    navigate(`?page=${page + 1}&limit=${rowsPerPage}&search=${search}`);
-  };
-
-  useEffect(() => {
-    if (shouldNavigate) {
-      nagigateToRoute();
-    }
-  }, [page, rowsPerPage, shouldNavigate]);
-
-  // Debounced version of getUsers
-  const debouncedGetUsers = debounce(nagigateToRoute, 300);
-
-  useEffect(() => {
-    if (shouldNavigate) {
-      debouncedGetUsers();
-      return () => debouncedGetUsers.cancel();
-    }
-  }, [search]);
-
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-    setShouldNavigate(true);
-  };
-
-  const handleRowPerPageChange = (rows: number) => {
-    setRowsPerPage(rows);
-    setPage(0);
-    setShouldNavigate(true);
-  };
-
-  const handleSearch = (value: string) => {
-    setSearch(value);
-    setPage(0);
-    setShouldNavigate(true);
-  };
 
   const handleUserDelete = async (userId: string) => {
     const isDeletionConfirmed = await showConfirmationAlert(
@@ -106,39 +70,17 @@ export default function Users() {
     </Link>
   );
 
-  const filter = (
-    <div className="d-flex align-items-center position-relative my-1 me-5">
-      <FontAwesomeIcon
-        icon={faMagnifyingGlass}
-        className="position-absolute ms-5 text-gray-600"
-      />
-      <input
-        type="text"
-        data-kt-permissions-table-filter="search"
-        className="form-control form-control-solid w-250px ps-13"
-        placeholder="Search"
-        value={search}
-        onChange={(event) => handleSearch(event.target.value)}
-      />
-    </div>
-  );
-
   return (
     <div>
       <BasicDataTable
-        filter={filter}
+        showSerial
+        searchable
         secondary={hasPermission(user, ["add-user"]) && addUserButton}
         columns={userColumns(handleUserDelete)}
         rows={users}
         count={total}
         page={page}
-        rowsPerPage={rowsPerPage}
-        setPage={handlePageChange}
-        setRowsPerPage={handleRowPerPageChange}
-        showSL={true}
-        serverSide
-        // sortables={["role"]}
-        // updateRows={(data) => setRows(data)}
+        rowsPerPage={limit}
       />
     </div>
   );

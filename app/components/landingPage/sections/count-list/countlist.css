@@ -1,0 +1,21 @@
+.count_list_section {
+  padding: 64px 0;
+}
+.count_list_section .count_card .heading {
+  color: #4b4e67;
+  font-family: "Inter", sans-serif;
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 40px;
+  letter-spacing: -0.48px;
+}
+.count_list_section .count_card .pera {
+  color: #858c95;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: -0.16px;
+}

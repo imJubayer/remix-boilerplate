@@ -1,0 +1,113 @@
+.image_with_list_section {
+  padding: 120px 0;
+}
+.image_with_list_section .heading {
+  color: #222;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+  font-size: 44px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  margin-bottom: 90px;
+}
+.image_with_list_section .list .main_item {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-bottom: 36px;
+}
+.image_with_list_section .list .main_item .imgbox {
+  padding: 8px;
+  border-radius: 50%;
+  background: #4b4e6740;
+  box-shadow: 0px 0px 0px 6px #fff;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  overflow: visible;
+}
+.image_with_list_section .list .main_item .text_box .title {
+  color: #4b4e67;
+  font-family: "Inter", sans-serif;
+  font-size: 36px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 44px;
+  margin-bottom: 12px;
+}
+.image_with_list_section .list .main_item .text_box .pera {
+  color: #767676;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+  margin-bottom: 0;
+}
+.image_with_list_section .list .item {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-bottom: 40px;
+  padding-left: 10px;
+}
+.image_with_list_section .list .item .imgbox {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border: 2px solid #d8d8d8;
+  position: relative;
+  overflow: visible;
+  flex-shrink: 0;
+}
+.image_with_list_section .list .item .imgbox::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, -125%);
+  width: 2px;
+  height: 50%;
+  background-color: #d8d8d8;
+}
+.image_with_list_section .list .main_item .imgbox::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, -125%);
+  width: 2px;
+  height: 35%;
+  background-color: #d8d8d8;
+}
+
+.image_with_list_section .list li:nth-child(1) .imgbox{
+  background: #4b4e67;
+}
+.image_with_list_section .list li:nth-child(1) .imgbox::before{
+  content: none;
+}
+
+.image_with_list_section .list li,
+.image_with_list_section .list li *{
+  transition: all ease 350ms;
+  cursor: pointer;
+}
+
+.image_with_list_section .image_content.animate{
+  animation: fade 1s ease;
+}
+
+@keyframes fade {
+  0% { opacity: 0 }
+  100% { opacity: 1 }
+}

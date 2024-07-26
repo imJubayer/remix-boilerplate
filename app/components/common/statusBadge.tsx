@@ -6,7 +6,7 @@ export default function StatusBadge({ badgeText = "" as string }): JSX.Element {
 
   return (
     <span
-      className={`badge ${badgeText == "active" ? "badge-light-success" : "badge-light-danger"}`}
+      className={`badge ${badgeText == "Active" ? "badge-light-success" : "badge-light-danger"}`}
     >
       {capitalizeFirstChar(badgeText)}
     </span>

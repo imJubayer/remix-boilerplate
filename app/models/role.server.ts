@@ -1,38 +1,53 @@
 import type { Role } from "@prisma/client";
 
-import { prisma } from "~/db.server";
-import { IRole } from "~/types/rbac";
+import { ROLE } from "./table";
 
-export async function getRoles(): Promise<IRole[]> {
-  return prisma.role.findMany({
-    where: {
-      name: {
-        notIn: ["superadmin"],
+export async function getRoles(page?: number, limit?: number) {
+  const [roles, total] = await Promise.all([
+    ROLE.findMany({
+      where: {
+        name: {
+          notIn: ["superadmin"],
+        },
       },
-    },
-    include: { permissions: true },
-    orderBy: { updatedAt: "desc" },
-  });
+      include: { permissions: true },
+      orderBy: { updatedAt: "desc" },
+      skip: page && limit ? (page - 1) * limit : undefined,
+      take: limit || undefined,
+    }),
+    ROLE.count({
+      where: {
+        name: {
+          notIn: ["superadmin"],
+        },
+      },
+    }),
+  ]);
+  return { roles, total };
 }
 
 export async function getRole(roleId: Role["id"]) {
-  return prisma.role.findUnique({
+  return ROLE.findUnique({
     where: {
       id: roleId,
     },
   });
 }
 
-export async function addRole(roleName: Role["name"]) {
-  await prisma.role.create({
+export async function addRole(
+  roleName: Role["name"],
+  description?: Role["description"],
+) {
+  await ROLE.create({
     data: {
       name: roleName,
+      description: description,
     },
   });
 }
 
 export async function updateRole(roleId: Role["id"], roleName: Role["name"]) {
-  const existingRole = await prisma.role.findUnique({
+  const existingRole = await ROLE.findUnique({
     where: {
       id: roleId,
     },
@@ -42,7 +57,7 @@ export async function updateRole(roleId: Role["id"], roleName: Role["name"]) {
     throw new Error(`Role with id ${roleId} not found`);
   }
 
-  await prisma.role.update({
+  await ROLE.update({
     where: {
       id: roleId,
     },
@@ -55,7 +70,7 @@ export async function updateRole(roleId: Role["id"], roleName: Role["name"]) {
 
 export async function deleteRole(roleId: Role["id"]) {
   if (roleId) {
-    await prisma.role.deleteMany({
+    await ROLE.deleteMany({
       where: {
         id: roleId,
       },

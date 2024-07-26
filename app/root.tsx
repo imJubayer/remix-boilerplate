@@ -1,6 +1,6 @@
 import { cssBundleHref } from "@remix-run/css-bundle";
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -9,6 +9,7 @@ import {
   Scripts,
   ScrollRestoration,
   isRouteErrorResponse,
+  useNavigate,
   useRouteError,
 } from "@remix-run/react";
 
@@ -16,6 +17,7 @@ import { getUser } from "~/session.server";
 import appStylesHref from "./assets/style.bundle.css";
 import custom from "./assets/custom.css";
 import Forbidden from "./components/common/forbidden";
+import Unauthorized from "./components/common/unauthorized";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: appStylesHref },
@@ -24,7 +26,8 @@ export const links: LinksFunction = () => [
 ];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  return json({ user: await getUser(request) });
+  const user = await getUser(request);
+  return json({ user: user });
 };
 
 export default function App() {
@@ -80,9 +83,12 @@ export default function App() {
 
 export function ErrorBoundary() {
   const error = useRouteError();
+  const navigate = useNavigate();
 
   if (error instanceof Error) {
-    return <div>An unexpected error occurred: {error.message}</div>;
+    // console.log(error);
+    // return <Unauthorized />;
+    return <div>An unexpected error occurred here: {error.message}</div>;
   }
 
   if (!isRouteErrorResponse(error)) {
@@ -94,7 +100,7 @@ export function ErrorBoundary() {
   }
 
   if (error.status === 404) {
-    return <div>Note not found</div>;
+    return <div>404 page</div>;
   }
 
   return <div>An unexpected error occurred: {error.statusText}</div>;
